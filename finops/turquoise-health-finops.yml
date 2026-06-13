@@ -1,0 +1,131 @@
+name: Turquoise Health FinOps Framework
+description: >-
+  FinOps alignment for Turquoise Health API consumption. Turquoise Health
+  operates on custom enterprise pricing with no public rate cards. Cost
+  management for API usage is governed by individual service agreements with
+  annual or multi-year contract terms. This document provides a FOCUS-aligned
+  framework for tracking and optimizing spend on Turquoise Health platform
+  services.
+version: '1.0'
+framework: FinOps Framework 1.0
+url: https://turquoise.health/plans/providers
+
+visibility:
+  public: false
+  notes: >-
+    All pricing is custom and requires direct engagement with Turquoise Health
+    sales. No public rate card or self-serve pricing exists for the core
+    platform. The SSP API is free.
+
+costAllocation:
+  dimensions:
+    - name: Plan Tier
+      description: >-
+        Cost varies by plan: Market Intelligence, Contract Intelligence,
+        or Precision Contracting.
+      values:
+        - Market Intelligence
+        - Contract Intelligence
+        - Precision Contracting
+
+    - name: Customer Segment
+      description: >-
+        Pricing varies by customer type: Provider, Payer, or Life Sciences.
+      values:
+        - Providers
+        - Payers
+        - Life Sciences
+
+    - name: Add-On Services
+      description: >-
+        Additional cost centers for optional add-ons beyond the base plan.
+      values:
+        - MRF Generation
+        - Patient Estimates
+        - Network Check
+        - Good Faith Estimates
+
+    - name: API Usage
+      description: >-
+        API-level cost tracking for the REST API, MCP Connector, and SSP API
+        consumption within the enterprise agreement.
+      values:
+        - REST API
+        - Turquoise Connector (MCP)
+        - Standard Service Packages API (free)
+
+optimization:
+  strategies:
+    - name: Use Free Tier Tools First
+      description: >-
+        Leverage free tools (SSP API, Medicare Pricer, Out-of-Network Pricer,
+        Hospital Transparency Tracker) before committing to paid plans to
+        validate data quality and use-case fit.
+      impact: high
+
+    - name: Right-Size Plan Tier
+      description: >-
+        Start with Market Intelligence and upgrade only when Contract
+        Intelligence or Precision Contracting features (scenario modeling,
+        denials tracking) are actively needed.
+      impact: high
+
+    - name: Negotiate Annual Contracts
+      description: >-
+        Engage Turquoise Health sales early for multi-year agreements, which
+        typically carry better per-unit economics than annual renewals.
+      impact: medium
+
+    - name: Consolidate Users Under Unlimited Seats
+      description: >-
+        All plans include unlimited users, so there is no incremental cost for
+        user expansion. Maximize platform adoption to increase ROI per contract.
+      impact: medium
+
+    - name: Track Add-On ROI
+      description: >-
+        Add-ons (MRF Generation, Patient Estimates, Network Check) are
+        separately priced. Track compliance cost savings and revenue impact
+        to justify renewals.
+      impact: medium
+
+    - name: MCP Integration Efficiency
+      description: >-
+        Use the Turquoise Connector (MCP) to reduce manual data retrieval
+        time. Measure staff-hour savings against platform cost to quantify
+        productivity ROI.
+      impact: medium
+
+governance:
+  contractType: Enterprise SaaS
+  billingCycle: Annual (custom terms available)
+  publicPricing: false
+  freeTools:
+    - SSP API
+    - Medicare Pricer
+    - Out-of-Network Pricer
+    - Payer Transparency Scores
+    - Hospital Transparency Tracker
+    - PATIENTS Framework
+  compliance:
+    - SOC 2 Type II
+    - HIPAA
+  contactForPricing: https://turquoise.health/
+  email: info@turquoise.health
+
+roi:
+  benchmarks:
+    - metric: Admin Waste Reduction
+      value: '$7.5M+'
+      description: >-
+        Turquoise Health reports $7.5M+ in administrative waste reduced
+        across partner organizations.
+    - metric: Partner Organizations
+      value: '300+'
+      description: >-
+        More than 300 organizations use Turquoise Health for pricing,
+        negotiation, and compliance.
+    - metric: NPS Score
+      value: '66'
+      description: >-
+        Net Promoter Score of 66 indicating strong customer satisfaction.

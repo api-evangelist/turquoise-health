@@ -1,0 +1,117 @@
+aid: turquoise-health
+name: Turquoise Health
+description: >-
+  Turquoise Health is a healthcare price transparency platform that provides REST
+  APIs for accessing hospital and insurer negotiated rates, out-of-pocket cost
+  estimates, and machine-readable files (MRF) data. The platform enables
+  precision pricing and intelligent contracting for finance teams across
+  healthcare, covering providers, payers, and life sciences organizations.
+  Turquoise Health also offers the Turquoise Connector MCP server for AI-tool
+  integration with healthcare pricing data, Standard Service Packages (SSP) APIs,
+  and open-source toolkits for FHIR financial transaction standards.
+type: Index
+image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+url: https://raw.githubusercontent.com/api-evangelist/turquoise-health/refs/heads/main/apis.yml
+created: '2026-06-13'
+modified: '2026-06-13'
+specificationVersion: '0.19'
+tags:
+  - Healthcare
+  - Price Transparency
+  - Hospital Rates
+  - Payer Rates
+  - Machine-Readable Files
+  - FHIR
+  - Health Insurance
+  - Negotiated Rates
+  - Out-of-Pocket Costs
+  - MRF
+apis:
+  - name: Turquoise Health REST API
+    description: >-
+      REST API providing access to healthcare pricing data including hospital
+      negotiated rates, payer contracted rates, out-of-pocket cost estimates,
+      and machine-readable file (MRF) data. Supports the Turquoise Knowledge
+      Graph linking rates, contracts, and policies as standardized data objects.
+    image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    humanURL: https://turquoise.health/api/redoc
+    baseURL: https://turquoise.health/api
+    tags:
+      - Healthcare Pricing
+      - Negotiated Rates
+      - Hospital Rates
+      - Payer Rates
+    properties:
+      - type: Documentation
+        url: https://turquoise.health/api/redoc
+    contact:
+      - FN: Turquoise Health
+        email: info@turquoise.health
+
+  - name: Turquoise Connector (MCP)
+    description: >-
+      An MCP (Model Context Protocol) server that connects AI tools to
+      Turquoise Health's healthcare pricing data, enabling developers to query
+      pricing information across multiple care settings and organizations
+      directly from AI assistants and coding environments.
+    image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    humanURL: https://turquoise.health/resources/blog/
+    baseURL: https://turquoise.health
+    tags:
+      - MCP
+      - AI Integration
+      - Healthcare Pricing
+      - Developer Tools
+    properties:
+      - type: Documentation
+        url: https://turquoise.health/resources/blog/
+    contact:
+      - FN: Turquoise Health
+        email: info@turquoise.health
+
+  - name: Standard Service Packages (SSP) API
+    description: >-
+      Free API providing access to Turquoise Health's library of Standard
+      Service Packages (SSPs), which gather all medical services, materials,
+      and fees associated with a healthcare procedure and represent them as a
+      single standardized code.
+    image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    humanURL: https://turquoise.health/products/ssps
+    baseURL: https://turquoise.health
+    tags:
+      - Standard Service Packages
+      - Healthcare Codes
+      - Procedure Pricing
+      - Free API
+    properties:
+      - type: Documentation
+        url: https://turquoise.health/products/ssps
+    contact:
+      - FN: Turquoise Health
+        email: info@turquoise.health
+
+common:
+  - type: Website
+    url: https://turquoise.health/
+  - type: Documentation
+    url: https://turquoise.health/api/redoc
+  - type: GitHubOrg
+    url: https://github.com/turquoisehealth
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/turquoise-health/
+  - type: X
+    url: https://twitter.com/TurquoiseHC
+  - type: Blog
+    url: https://turquoise.health/resources/blog/
+  - type: Pricing
+    url: https://turquoise.health/plans/providers
+  - type: Plans
+    url: plans/turquoise-health-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/turquoise-health-rate-limits.yml
+  - type: FinOps
+    url: finops/turquoise-health-finops.yml
+
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

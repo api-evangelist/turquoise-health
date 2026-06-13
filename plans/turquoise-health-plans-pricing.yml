@@ -1,0 +1,128 @@
+name: Turquoise Health Plans and Pricing
+description: >-
+  Turquoise Health offers tiered pricing plans for providers, payers, and life
+  sciences organizations. All plans feature customized pricing based on
+  organizational needs. No public pricing tiers are disclosed; contact is
+  required for quotes. A free Standard Service Packages (SSP) API is also
+  available.
+version: '0.1'
+url: https://turquoise.health/plans/providers
+
+plans:
+  - name: Market Intelligence
+    description: >-
+      Foundation plan offering pricing analytics powered by Clear Rates data.
+      Includes AI insights via AskTQ, custom reports, and benchmarking tools
+      for organizations needing market rate comparisons.
+    url: https://turquoise.health/plans/providers
+    targets:
+      - Providers
+      - Payers
+      - Life Sciences
+    features:
+      - Pricing analytics powered by Clear Rates
+      - AskTQ AI insights
+      - Custom reports
+      - Benchmarking tools
+      - Unlimited users across organization
+      - Dedicated in-house support
+      - SOC 2 Type II and HIPAA compliance
+      - Implementation services
+    pricing:
+      model: custom
+      public: false
+      contact: https://turquoise.health/
+
+  - name: Contract Intelligence
+    description: >-
+      Builds on Market Intelligence with centralized contract repository,
+      smart extraction, side-by-side contract comparison matrices, and payer
+      policy alerts with granular permissions. The most popular tier for teams
+      conducting contract analysis and risk identification.
+    url: https://turquoise.health/plans/providers
+    targets:
+      - Providers
+      - Payers
+      - Life Sciences
+    features:
+      - All Market Intelligence features
+      - Centralized contract repository
+      - Smart contract extraction
+      - Side-by-side contract comparison
+      - Payer policy alerts
+      - Granular permission controls
+      - Audit logging
+      - SSO support
+    pricing:
+      model: custom
+      public: false
+      contact: https://turquoise.health/
+
+  - name: Precision Contracting
+    description: >-
+      Premium tier featuring advanced scenario modeling, denials tracking,
+      claims-integrated analytics, and lifecycle management for organizations
+      seeking negotiation automation and comprehensive contracting capabilities.
+    url: https://turquoise.health/plans/providers
+    targets:
+      - Providers
+      - Payers
+      - Life Sciences
+    features:
+      - All Contract Intelligence features
+      - Advanced scenario modeling
+      - Denials tracking
+      - Claims-integrated analytics
+      - Lifecycle management
+      - Negotiation automation
+    pricing:
+      model: custom
+      public: false
+      contact: https://turquoise.health/
+
+addons:
+  - name: MRF Generation
+    description: >-
+      Fully compliant, simplified machine-readable file services for
+      CMS Hospital Price Transparency requirements.
+    url: https://turquoise.health/products
+
+  - name: Patient Estimates
+    description: >-
+      White-label consumer pricing tools for patient out-of-pocket cost
+      estimates and Good Faith Estimates (No Surprises Act compliance).
+    url: https://turquoise.health/products
+
+  - name: Network Check
+    description: >-
+      Competitive benchmarking and repricing analytics for payer organizations.
+    url: https://turquoise.health/plans/payers
+
+freeTools:
+  - name: Standard Service Packages (SSP) API
+    description: >-
+      Free API providing access to the SSP library for medical service and
+      procedure code standardization.
+    url: https://turquoise.health/products/ssps
+
+  - name: Medicare Pricer
+    description: >-
+      Free tool for Medicare rate benchmarking and price comparison.
+    url: https://turquoise.health/
+
+  - name: Out-of-Network Pricer
+    description: >-
+      Free validation tool for out-of-network rate calculations.
+    url: https://turquoise.health/
+
+  - name: Payer Transparency Scores
+    description: >-
+      Free public scores measuring payer compliance with price transparency
+      regulations.
+    url: https://turquoise.health/
+
+  - name: Hospital Transparency Tracker
+    description: >-
+      Free public tool tracking hospital compliance with CMS price transparency
+      requirements.
+    url: https://turquoise.health/

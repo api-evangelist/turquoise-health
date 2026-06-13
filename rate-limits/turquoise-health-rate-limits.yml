@@ -1,0 +1,63 @@
+name: Turquoise Health Rate Limits
+description: >-
+  Turquoise Health does not publicly document specific API rate limits. Access
+  to the primary REST API (turquoise.health/api) requires authentication and is
+  subject to enterprise agreements. The free Standard Service Packages (SSP)
+  API may have separate limits. Rate limit details are available through direct
+  engagement with Turquoise Health's sales and onboarding teams.
+version: '0.1'
+url: https://turquoise.health/api/redoc
+
+rateLimits:
+  - name: REST API Rate Limits
+    description: >-
+      The Turquoise Health REST API requires authentication and is available
+      under enterprise licensing agreements. Specific rate limits, quotas, and
+      throttling policies are not publicly disclosed and are defined in
+      individual service agreements.
+    scope: api
+    public: false
+    notes: >-
+      Contact Turquoise Health at info@turquoise.health or request a demo
+      to obtain specific rate limit information for your use case.
+    contact: https://turquoise.health/
+
+  - name: Standard Service Packages (SSP) API Rate Limits
+    description: >-
+      The SSP API is offered as a free public API. Rate limits for this
+      endpoint are not publicly documented but are expected to apply for
+      high-volume usage. The SSP API is designed for simple integration with
+      a few lines of code.
+    scope: api
+    public: true
+    url: https://turquoise.health/products/ssps
+    notes: >-
+      Rate limits for the free SSP API are not publicly specified. Monitor
+      response headers for X-RateLimit-Limit, X-RateLimit-Remaining, and
+      Retry-After values.
+
+  - name: Turquoise Connector (MCP) Rate Limits
+    description: >-
+      The MCP server integration for AI tools connects to Turquoise Health's
+      pricing data. Rate limits for this integration are not publicly
+      documented and likely governed by the underlying enterprise plan terms.
+    scope: integration
+    public: false
+    url: https://turquoise.health/resources/blog/
+    notes: >-
+      MCP server rate limits depend on the underlying Turquoise Health
+      enterprise plan. Consult your service agreement or contact support.
+
+security:
+  - type: API Key
+    description: >-
+      The Turquoise Health API uses API key or token-based authentication.
+      Specific authentication schemes (OAuth 2.0, Bearer tokens, or API keys)
+      are documented in the private API reference accessible at
+      turquoise.health/api/redoc after authorization.
+  - type: SOC2
+    description: SOC 2 Type II certified
+  - type: HIPAA
+    description: HIPAA-compliant infrastructure with attestation
+  - type: SSO
+    description: Single Sign-On (SSO) supported for enterprise plans

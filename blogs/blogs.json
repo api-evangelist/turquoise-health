@@ -1,7 +1,7 @@
 {
   "provider": "turquoise-health",
   "url": "https://turquoise.health/resources/blog/",
-  "fetched": "2026-06-13",
+  "fetched": "2026-06-14T20:42:17Z",
   "posts": [
     {
       "slug": "guide-to-the-turquoise-connector-mcp",
@@ -9,7 +9,12 @@
       "url": "https://turquoise.health/resources/blog/guide-to-the-turquoise-connector-mcp",
       "datePublished": "2026-06-12",
       "description": "Connect your preferred AI tool directly to the data sources that power AskTQ. Once connected, your AI tool can securely access Turquoise data, starting with Clear Rates.",
-      "tags": ["MCP", "AI Integration", "Healthcare Pricing", "Developer Tools"]
+      "tags": [
+        "MCP",
+        "AI Integration",
+        "Healthcare Pricing",
+        "Developer Tools"
+      ]
     },
     {
       "slug": "introducing-the-turquoise-out-of-network-dashboard",
@@ -17,7 +22,12 @@
       "url": "https://turquoise.health/resources/blog/introducing-the-turquoise-out-of-network-dashboard",
       "datePublished": "2026-05-27",
       "description": "Turquoise launched a free, open license out-of-network pricer built on data designed to eliminate the opacity in QPA calculations, IDR disputes, and broader OON pricing scenarios.",
-      "tags": ["Out-of-Network", "Pricing", "Price Transparency", "IDR"]
+      "tags": [
+        "Out-of-Network",
+        "Pricing",
+        "Price Transparency",
+        "IDR"
+      ]
     },
     {
       "slug": "to-patients-ai-generated-perception-is-the-new-price-for-your-drug",
@@ -25,7 +35,12 @@
       "url": "https://turquoise.health/resources/blog/to-patients-ai-generated-perception-is-the-new-price-for-your-drug",
       "datePublished": "2026-05-06",
       "description": "Here's how you can control the cost narrative vacuum yourself.",
-      "tags": ["AI", "Drug Pricing", "Patient Costs", "Price Transparency"]
+      "tags": [
+        "AI",
+        "Drug Pricing",
+        "Patient Costs",
+        "Price Transparency"
+      ]
     },
     {
       "slug": "new-york-proves-you-can-put-a-price-on-healthcare",
@@ -33,15 +48,25 @@
       "url": "https://turquoise.health/resources/blog/new-york-proves-you-can-put-a-price-on-healthcare",
       "datePublished": "2026-04-20",
       "description": "Why price transparency has fallen short for patients and how New York City and Turquoise are charting a better path with the new NYC Health Care Price Comparison Tool.",
-      "tags": ["Price Transparency", "New York", "Patient Pricing", "Healthcare Policy"]
+      "tags": [
+        "Price Transparency",
+        "New York",
+        "Patient Pricing",
+        "Healthcare Policy"
+      ]
     },
     {
       "slug": "updates-to-the-hospital-mrf-go-live-today-heres-v3",
-      "title": "Updates to the Hospital MRF Go Live Today — Here's v3",
+      "title": "Updates to the Hospital MRF Go Live Today \u2014 Here's v3",
       "url": "https://turquoise.health/resources/blog/updates-to-the-hospital-mrf-go-live-today-heres-v3",
       "datePublished": "2026-04-02",
       "description": "Early data shows 2,731 hospitals on v3, 1,956 with median allowed amount data on day one.",
-      "tags": ["MRF", "Hospital Data", "Price Transparency", "CMS"]
+      "tags": [
+        "MRF",
+        "Hospital Data",
+        "Price Transparency",
+        "CMS"
+      ]
     },
     {
       "slug": "designing-the-future-of-healthcare-payments-evolving-the-turquoise-brand",
@@ -49,15 +74,24 @@
       "url": "https://turquoise.health/resources/blog/designing-the-future-of-healthcare-payments-evolving-the-turquoise-brand",
       "datePublished": "2026-03-24",
       "description": "Turquoise Health rebrands to reflect its evolution from a price transparency data company to a full healthcare payments intelligence platform.",
-      "tags": ["Brand", "Healthcare Payments", "Company News"]
+      "tags": [
+        "Brand",
+        "Healthcare Payments",
+        "Company News"
+      ]
     },
     {
       "slug": "we-raised-a-40m-series-c-heres-exactly-what-were-building-next",
-      "title": "We Raised a $40M Series C — Here's Exactly What We're Building Next",
+      "title": "We Raised a $40M Series C \u2014 Here's Exactly What We're Building Next",
       "url": "https://turquoise.health/resources/blog/we-raised-a-40m-series-c-heres-exactly-what-were-building-next",
       "datePublished": "2026-03-17",
       "description": "Like always, let's be transparent about what the fundraise means.",
-      "tags": ["Funding", "Series C", "Company News", "Product Roadmap"]
+      "tags": [
+        "Funding",
+        "Series C",
+        "Company News",
+        "Product Roadmap"
+      ]
     },
     {
       "slug": "turquoise-health-public-comment-on-cms-1834-p-2",
@@ -65,7 +99,12 @@
       "url": "https://turquoise.health/resources/blog/turquoise-health-public-comment-on-cms-1834-p-2",
       "datePublished": "2026-03-11",
       "description": "Transparency in Coverage files are on the verge of a much-needed overhaul to become leaner, more organized, and more useful.",
-      "tags": ["CMS", "Regulatory", "Transparency in Coverage", "Healthcare Policy"]
+      "tags": [
+        "CMS",
+        "Regulatory",
+        "Transparency in Coverage",
+        "Healthcare Policy"
+      ]
     },
     {
       "slug": "can-price-transparency-lower-cancer-costs",
@@ -73,7 +112,12 @@
       "url": "https://turquoise.health/resources/blog/can-price-transparency-lower-cancer-costs",
       "datePublished": "2026-03-10",
       "description": "Why complete and extensive disclosures matter if we want to see real change.",
-      "tags": ["Price Transparency", "Cancer", "Healthcare Costs", "Policy"]
+      "tags": [
+        "Price Transparency",
+        "Cancer",
+        "Healthcare Costs",
+        "Policy"
+      ]
     },
     {
       "slug": "turquoise-reflections-on-the-great-healthcare-plan",
@@ -81,7 +125,23 @@
       "url": "https://turquoise.health/resources/blog/turquoise-reflections-on-the-great-healthcare-plan",
       "datePublished": "2026-03-10",
       "description": "Momentum builds as the government increases accountability on understanding the cost of care.",
-      "tags": ["Healthcare Policy", "Price Transparency", "Government", "Accountability"]
+      "tags": [
+        "Healthcare Policy",
+        "Price Transparency",
+        "Government",
+        "Accountability"
+      ]
     }
-  ]
+  ],
+  "repo": "turquoise-health",
+  "feeds": [
+    {
+      "source": "https://twitter.com/TurquoiseHC",
+      "feed_url": "https://twitter.com/TurquoiseHC",
+      "title": "",
+      "saved": 0,
+      "method": "none"
+    }
+  ],
+  "post_count": 0
 }

@@ -10,7 +10,7 @@ description: >-
   integration with healthcare pricing data, Standard Service Packages (SSP) APIs,
   and open-source toolkits for FHIR financial transaction standards.
 type: Index
-image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 url: https://raw.githubusercontent.com/api-evangelist/turquoise-health/refs/heads/main/apis.yml
 created: '2026-06-13'
 modified: '2026-06-13'
@@ -33,7 +33,7 @@ apis:
       negotiated rates, payer contracted rates, out-of-pocket cost estimates,
       and machine-readable file (MRF) data. Supports the Turquoise Knowledge
       Graph linking rates, contracts, and policies as standardized data objects.
-    image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
     humanURL: https://turquoise.health/api/redoc
     baseURL: https://turquoise.health/api
     tags:
@@ -54,7 +54,7 @@ apis:
       Turquoise Health's healthcare pricing data, enabling developers to query
       pricing information across multiple care settings and organizations
       directly from AI assistants and coding environments.
-    image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
     humanURL: https://turquoise.health/resources/blog/
     baseURL: https://turquoise.health
     tags:
@@ -75,7 +75,7 @@ apis:
       Service Packages (SSPs), which gather all medical services, materials,
       and fees associated with a healthcare procedure and represent them as a
       single standardized code.
-    image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+    image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
     humanURL: https://turquoise.health/products/ssps
     baseURL: https://turquoise.health
     tags:

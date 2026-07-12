@@ -91,6 +91,8 @@ apis:
         email: info@turquoise.health
 
 common:
+  - type: DomainSecurity
+    url: security/turquoise-health-domain-security.yml
   - type: Website
     url: https://turquoise.health/
   - type: Documentation

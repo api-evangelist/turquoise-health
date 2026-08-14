@@ -1,0 +1,28 @@
+generated: '2026-07-21'
+method: searched
+source: https://registry.npmjs.org (npm scope @turquoisehealth)
+note: >-
+  Only first-party packages found are Turquoise Health's design-system / CSS framework.
+  These are UI/design packages, NOT API client SDKs, so no `SDKs` pointer is emitted
+  (the provider publishes no public API client library). PyPI, and other registries
+  returned no first-party Turquoise Health packages.
+packages:
+- language: javascript
+  registry: npm
+  name: "@turquoisehealth/pit-viper"
+  url: https://www.npmjs.com/package/@turquoisehealth/pit-viper
+  install: npm install @turquoisehealth/pit-viper
+  version: 2.212.0
+  license: MIT
+  repository: https://github.com/turquoisehealth/pit-viper
+  category: design-system
+  official: true
+- language: javascript
+  registry: npm
+  name: th-pit-viper
+  url: https://www.npmjs.com/package/th-pit-viper
+  install: npm install th-pit-viper
+  version: 1.94.0
+  repository: https://github.com/turquoisehealth/pit-viper
+  category: css-framework
+  official: true

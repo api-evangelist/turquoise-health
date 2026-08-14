@@ -1,0 +1,24 @@
+generated: '2026-07-21'
+method: searched
+host: https://turquoise.health
+note: >-
+  Probed the standard /.well-known/ discovery surface on the website host and the
+  api.turquoise.health host. No documents returned 200 (website paths 404; the API host
+  answers every path with HTTP 401 behind an auth gate). No catalog captured, so no
+  WellKnown/SecurityTxt pointer is wired.
+documents:
+- path: /.well-known/security.txt
+  status: 404
+- path: /.well-known/openid-configuration
+  status: 404
+- path: /.well-known/oauth-authorization-server
+  status: 404
+- path: /.well-known/api-catalog
+  status: 404
+- path: /.well-known/ai-plugin.json
+  status: 404
+api_host_documents:
+- host: https://api.turquoise.health
+  path: /.well-known/security.txt
+  status: 401
+  note: auth-gated; all paths return 401 JSON

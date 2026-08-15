@@ -1,0 +1,111 @@
+generated: '2026-08-14'
+method: searched
+source: openapi/turquoise-health-consumer-pricing-openapi.yml
+docs: https://turquoise.health/api/docs/start-building/
+docs_markdown: https://turquoise.health/api/docs/start-building.md
+note: >-
+  Upgraded from the derived baseline. The OpenAPI declares two http/bearer schemes but no
+  oauth2 securityScheme and no global security[] requirement, so the spec alone understates
+  the real model. The published Start Building guide documents the actual contract: a
+  single OAuth 2.0 client-credentials flow whose token authenticates BOTH the REST API and
+  the MCP server. The MCP host additionally serves RFC 8414 + RFC 9728 metadata anonymously.
+
+summary:
+  types: [http, oauth2]
+  http_schemes: [bearer]
+  bearer_format: JWT
+  oauth2_flows: [clientCredentials]
+  api_key_in: []
+  shared_token: >-
+    The same access token authenticates the Consumer Pricing REST API
+    (https://api.turquoise.health) and the MCP server
+    (https://consumer-mcp.turquoise.health/mcp).
+
+schemes:
+- name: BearerAuth
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  sources: [openapi/turquoise-health-consumer-pricing-openapi.yml]
+- name: PartnerBearerToken
+  type: http
+  scheme: bearer
+  description: >-
+    OAuth2 access token issued by Turquoise; validated against turquoise-api's
+    /oauth/authorize on every request.
+  sources: [openapi/turquoise-health-consumer-pricing-openapi.yml]
+
+oauth2:
+  flow: client_credentials
+  token_endpoint: https://api.turquoise.health/oauth/token
+  token_request:
+    method: POST
+    content_type: application/json
+    parameters: [grant_type, client_id, client_secret, organization_id]
+    note: >-
+      Credentials are a client_id, client_secret and organization_id. Unusually, the token
+      request body is JSON rather than form-encoded, and organization_id is a required
+      third credential alongside the usual client pair.
+  token_response:
+    access_token: Bearer token to send on every request.
+    token_type: Always "Bearer".
+    expires_in: Seconds until expiry (documented example 3600).
+  expiry_note: >-
+    The docs state expires_in in the example is 3600 (one hour) but also advise that
+    "access tokens are valid for a week" and recommend caching rather than minting per
+    request. Treat expires_in on the live response as authoritative and refresh
+    proactively rather than waiting for a 401.
+  on_expiry: Requests receive HTTP 401 Unauthorized; repeat the token request to obtain a new one.
+
+request_header:
+  name: Authorization
+  format: 'Bearer <token>'
+  applies_to:
+  - https://api.turquoise.health (every v3 request)
+  - https://consumer-mcp.turquoise.health/mcp (every MCP request)
+
+interactive_alternative:
+  applies_to: MCP only
+  description: >-
+    MCP-capable interactive clients (Claude Code, Claude Desktop, Codex, Cursor) sign in
+    through the browser with a Turquoise account, so there is no token to manage; the
+    server then scopes calls to that user's organization.
+
+discovery:
+  authorization_server_metadata:
+    url: https://consumer-mcp.turquoise.health/.well-known/oauth-authorization-server
+    spec: RFC 8414
+    status: 200
+    file: well-known/turquoise-health-oauth-authorization-server.json
+  protected_resource_metadata:
+    url: https://consumer-mcp.turquoise.health/.well-known/oauth-protected-resource/mcp
+    spec: RFC 9728
+    status: 200
+    file: well-known/turquoise-health-oauth-protected-resource.json
+
+credential_acquisition:
+  test: https://turquoise.health/signup/?signupContext=api
+  test_note: Free sign-up returns test credentials in a demo account.
+  production: https://turquoise.health/request-a-demo
+  production_note: >-
+    Production access is required to send real PHI to the personalized-estimates endpoint
+    and mandates a signed Business Associate Agreement (BAA) with Turquoise.
+
+auth_errors:
+- status: 401
+  meaning: Missing, expired, or wrong-audience token.
+- status: 403
+  meaning: Token is valid but not granted the correct scope.
+- code: unauthorized
+  surface: personalized-estimates
+- code: forbidden
+  surface: personalized-estimates
+- code: insufficient_scope
+  surface: v3
+- code: authorization_unavailable
+  surface: personalized-estimates
+
+see_also:
+- scopes/turquoise-health-scopes.yml
+- conventions/turquoise-health-conventions.yml
+- well-known/turquoise-health-well-known.yml

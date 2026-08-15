@@ -1,63 +1,90 @@
 name: Turquoise Health Rate Limits
+generated: '2026-08-14'
+method: searched
+source: https://turquoise.health/api/docs/api-reference.md
+url: https://turquoise.health/api/docs/api-reference/
+version: '0.2'
 description: >-
-  Turquoise Health does not publicly document specific API rate limits. Access
-  to the primary REST API (turquoise.health/api) requires authentication and is
-  subject to enterprise agreements. The free Standard Service Packages (SSP)
-  API may have separate limits. Rate limit details are available through direct
-  engagement with Turquoise Health's sales and onboarding teams.
-version: '0.1'
-url: https://turquoise.health/api/redoc
+  Turquoise Health acknowledges rate limiting on the Consumer Pricing API but publishes no
+  numbers, no windows and no response headers. The only public statement is the API
+  reference's Errors block — "429 Rate limit; back off and retry" — plus a stable
+  `rate_limited` error code in the OpenAPI ErrorCode enum. Every one of the fifteen
+  operations declares a 429 response, so the limit is real and global; its size is not
+  disclosed.
 
-rateLimits:
-  - name: REST API Rate Limits
-    description: >-
-      The Turquoise Health REST API requires authentication and is available
-      under enterprise licensing agreements. Specific rate limits, quotas, and
-      throttling policies are not publicly disclosed and are defined in
-      individual service agreements.
-    scope: api
-    public: false
-    notes: >-
-      Contact Turquoise Health at info@turquoise.health or request a demo
-      to obtain specific rate limit information for your use case.
-    contact: https://turquoise.health/
+limit_count: 0
+limit_count_note: >-
+  Zero PUBLISHED limits, not zero limits. Recorded as an honest zero: the provider
+  documents the failure mode without documenting the threshold.
 
-  - name: Standard Service Packages (SSP) API Rate Limits
-    description: >-
-      The SSP API is offered as a free public API. Rate limits for this
-      endpoint are not publicly documented but are expected to apply for
-      high-volume usage. The SSP API is designed for simple integration with
-      a few lines of code.
-    scope: api
-    public: true
-    url: https://turquoise.health/products/ssps
-    notes: >-
-      Rate limits for the free SSP API are not publicly specified. Monitor
-      response headers for X-RateLimit-Limit, X-RateLimit-Remaining, and
-      Retry-After values.
+rate_limits:
+- name: Consumer Pricing API (v3)
+  scope: unknown
+  scope_note: >-
+    Not stated whether limits are per-token, per-organization or per-endpoint. Since a
+    token is minted against an organization_id, per-organization is the likely grain, but
+    the docs do not say so and it is not recorded as fact.
+  window: not published
+  limit: not published
+  burst: not published
+  status_on_exhaustion: 429
+  error_code: rate_limited
+  error_title: Rate limit exceeded
+  documented_guidance: Back off and retry.
+  applies_to: all 15 operations under https://api.turquoise.health/v3
+  source: https://turquoise.health/api/docs/api-reference.md
+- name: Consumer Pricing MCP server
+  scope: unknown
+  window: not published
+  limit: not published
+  status_on_exhaustion: not published
+  endpoint: https://consumer-mcp.turquoise.health/mcp
+  note: >-
+    The MCP reference documents only 200 / 401 / 403 responses and says nothing about
+    throttling. Since the tools compose several v3 REST calls server-side, a single tool
+    call consumes more upstream budget than a single REST call — a caller cannot reason
+    about that without published numbers.
+- name: Eligibility checks (personalized estimates)
+  scope: per-member
+  window: not published
+  limit: not published
+  behaviour: >-
+    Not a rate limit as such, but the closest thing to one on this endpoint: the first
+    call for a given patient returns 202 while the live X12 270/271 check runs, and
+    subsequent calls return 200 from a cache. Repeated polling of the same member is
+    therefore cheap; fanning out across many members is not.
+  source: https://turquoise.health/api/docs/personalized-estimates.md
 
-  - name: Turquoise Connector (MCP) Rate Limits
-    description: >-
-      The MCP server integration for AI tools connects to Turquoise Health's
-      pricing data. Rate limits for this integration are not publicly
-      documented and likely governed by the underlying enterprise plan terms.
-    scope: integration
-    public: false
-    url: https://turquoise.health/resources/blog/
-    notes: >-
-      MCP server rate limits depend on the underlying Turquoise Health
-      enterprise plan. Consult your service agreement or contact support.
+response_headers:
+  published: []
+  probed: []
+  note: >-
+    No X-RateLimit-*, no RateLimit-* (RFC 9331 draft), and no Retry-After are documented
+    anywhere in the docs, and the OpenAPI declares NO response headers on any operation —
+    including the 429 responses. Checked 2026-08-14 by grepping the full spec and all
+    seven published docs pages. Headers could not be observed live either: every path on
+    api.turquoise.health returns 401 without a token, so there is no unauthenticated
+    response to read them from.
+  consequence: >-
+    An agent has no runtime signal to pace itself with. It cannot know how much budget
+    remains, and on a 429 it cannot know how long to wait — exponential backoff is the
+    only available strategy. Publishing RateLimit-Limit / RateLimit-Remaining /
+    RateLimit-Reset and a Retry-After on the 429 would be the single highest-value
+    addition to this API's runtime contract.
 
-security:
-  - type: API Key
-    description: >-
-      The Turquoise Health API uses API key or token-based authentication.
-      Specific authentication schemes (OAuth 2.0, Bearer tokens, or API keys)
-      are documented in the private API reference accessible at
-      turquoise.health/api/redoc after authorization.
-  - type: SOC2
-    description: SOC 2 Type II certified
-  - type: HIPAA
-    description: HIPAA-compliant infrastructure with attestation
-  - type: SSO
-    description: Single Sign-On (SSO) supported for enterprise plans
+retry_guidance:
+  documented: back off and retry
+  retry_after_header: absent
+  recommended: exponential backoff with jitter; retry 429, 500, 502 and 503; do not retry 4xx validation errors
+
+enterprise:
+  note: >-
+    Turquoise's plans are custom-priced enterprise agreements, so quota and throttling
+    terms are likely contractual rather than public.
+  contact: info@turquoise.health
+  request_access: https://turquoise.health/request-a-demo
+
+see_also:
+- conventions/turquoise-health-conventions.yml
+- errors/turquoise-health-problem-types.yml
+- plans/turquoise-health-plans-pricing.yml

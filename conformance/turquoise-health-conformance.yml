@@ -1,0 +1,170 @@
+generated: '2026-08-14'
+method: searched
+source: openapi/turquoise-health-consumer-pricing-openapi.yml
+docs:
+- https://turquoise.health/api/docs/start-building.md
+- https://turquoise.health/api/docs/personalized-estimates.md
+- https://turquoise.health/plans/providers
+note: >-
+  Standards asserted from the published OpenAPI, the live /.well-known/ documents on the
+  MCP host, and Turquoise's own documentation. Healthcare-specific regimes matter more
+  here than the usual web-API set: this is a price-transparency company operating under
+  CMS rules and exchanging X12 eligibility transactions.
+
+standards:
+- id: openapi-3.1
+  conforms: true
+  evidence: >-
+    openapi/turquoise-health-consumer-pricing-openapi.yml declares openapi 3.1.0; published
+    publicly and unauthenticated at https://turquoise.health/api/docs/openapi.json.
+
+- id: oauth2
+  conforms: true
+  evidence: >-
+    OAuth 2.0 client-credentials flow documented at
+    https://turquoise.health/api/docs/start-building.md with token endpoint
+    https://api.turquoise.health/oauth/token.
+  deviation: >-
+    The token request body is JSON rather than application/x-www-form-urlencoded, and
+    carries a non-standard required organization_id parameter alongside client_id and
+    client_secret. A generic RFC 6749 client library will not mint a token unmodified.
+
+- id: rfc8414-oauth-authorization-server-metadata
+  conforms: true
+  evidence: >-
+    https://consumer-mcp.turquoise.health/.well-known/oauth-authorization-server returns
+    200 with issuer, authorization_endpoint, token_endpoint, registration_endpoint,
+    scopes_supported, response_types_supported, grant_types_supported,
+    token_endpoint_auth_methods_supported and code_challenge_methods_supported.
+
+- id: rfc9728-oauth-protected-resource-metadata
+  conforms: true
+  evidence: >-
+    https://consumer-mcp.turquoise.health/.well-known/oauth-protected-resource/mcp returns
+    200 naming the resource, its authorization_servers and bearer_methods_supported.
+  deviation: scopes_supported is an empty array; read:mcp and read:eligibility are documented in prose only.
+
+- id: rfc7591-dynamic-client-registration
+  conforms: partial
+  evidence: >-
+    The RFC 8414 metadata advertises a registration_endpoint
+    (https://consumer-mcp.turquoise.health/register), but the behaviour was not exercised.
+
+- id: pkce-rfc7636
+  conforms: true
+  evidence: code_challenge_methods_supported ["S256"] in the authorization-server metadata.
+
+- id: mcp
+  conforms: true
+  evidence: >-
+    Hosted Model Context Protocol server at https://consumer-mcp.turquoise.health/mcp over
+    streamable HTTP; probed 2026-08-14, returns a JSON-RPC OAuth challenge
+    ({"error":"invalid_token"}) on an unauthenticated tools/list. Five tools documented.
+
+- id: llmstxt
+  conforms: true
+  evidence: https://turquoise.health/api/docs/llms.txt returns 200 with an llms.txt-format document.
+
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: >-
+    Errors are application/json with a vendor {"error": {...}} envelope, not
+    application/problem+json. A stable code registry is published (ErrorCode enum), so the
+    substance is present without the media type.
+
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: /.well-known/security.txt returns 404 on turquoise.health and on consumer-mcp.turquoise.health.
+
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: No Sunset or Deprecation header documented; no deprecation policy published.
+
+- id: a2a-agent-card
+  conforms: false
+  evidence: >-
+    /.well-known/agent-card.json and /.well-known/agent.json return 404 on every Turquoise
+    host probed 2026-08-14.
+
+- id: asyncapi
+  conforms: false
+  applicable: false
+  evidence: >-
+    No event, streaming or webhook surface is documented anywhere in the developer docs, so
+    there is nothing for an AsyncAPI document to describe. Not a gap.
+
+- id: x12-270-271-eligibility
+  conforms: true
+  evidence: >-
+    Personalized estimates are produced by running a real-time X12 270/271 eligibility
+    transaction with the member's payer. Turquoise documents translating X12 Service Type
+    Categories (e.g. STC 05 "Labs") into CPT/HCPCS-level benefit adjudication logic.
+    Source: https://turquoise.health/api/docs/personalized-estimates.md
+
+- id: cpt-hcpcs-billing-codes
+  conforms: true
+  evidence: >-
+    BillingCode schema in the OpenAPI; packages are addressed by billing code via
+    anchor_code, and benefit mapping operates at CPT/HCPCS level.
+
+- id: npi
+  conforms: true
+  evidence: >-
+    GET /v3/providers accepts an npi query parameter for exact National Provider Identifier
+    match (example 1417946021).
+
+- id: cms-hospital-price-transparency-45-cfr-180
+  conforms: true
+  role: service provider
+  evidence: >-
+    Turquoise publishes MRF generation services for CMS Hospital Price Transparency
+    compliance and maintains the open provider-price-transparency-guide file-format
+    proposal for 45 CFR §180.50.
+
+- id: cms-transparency-in-coverage
+  conforms: true
+  role: data consumer
+  evidence: >-
+    The pricing corpus is built from payer Transparency in Coverage and hospital MRF
+    machine-readable files.
+
+- id: no-surprises-act-good-faith-estimates
+  conforms: true
+  role: service provider
+  evidence: >-
+    Patient Estimates product provides Good Faith Estimate tooling for No Surprises Act
+    compliance (plans/turquoise-health-plans-pricing.yml).
+
+- id: hipaa
+  conforms: true
+  evidence: >-
+    member_eligibility fields are documented as PHI; traffic is routed to isolated
+    environments under HIPAA administrative, physical and technical safeguards; PHI
+    encrypted in transit and at rest with audited access; production PHI access requires a
+    signed Business Associate Agreement. HIPAA compliance also named on
+    https://turquoise.health/plans/providers.
+  source: https://turquoise.health/api/docs/personalized-estimates.md
+
+- id: soc2-type-ii
+  conforms: true
+  evidence: >-
+    "SOC 2 Type II" named on https://turquoise.health/ and
+    https://turquoise.health/plans/providers; certifications published via the Vanta Trust
+    Center. Detail: security/turquoise-health-trust-center.yml
+
+- id: fhir
+  conforms: false
+  evidence: >-
+    No FHIR resource shapes, no FHIR endpoints and no CapabilityStatement in the Consumer
+    Pricing API. Turquoise has published open-source work referencing FHIR financial
+    transaction standards, but that is not part of this API surface.
+
+- id: json-schema-2020-12
+  conforms: true
+  evidence: OpenAPI 3.1.0 uses JSON Schema 2020-12 for its 76 component schemas.
+
+compliance_program:
+  published: true
+  trust_center: https://app.vanta.com/turquoise.health/trust/4eadhio8ef1h3zwumb77kp
+  certifications: [SOC 2 Type II, HIPAA]
+  detail: security/turquoise-health-trust-center.yml

@@ -1,0 +1,215 @@
+generated: '2026-08-14'
+method: derived
+source: openapi/turquoise-health-consumer-pricing-openapi.yml
+docs: https://turquoise.health/api/docs/pricing-methodology/
+note: >-
+  Entity graph derived from $ref links and id-reference fields across the 76 component
+  schemas. The core of the model is a single fact table: a price is the intersection of a
+  provider, a package and a pricing basis. Everything else is either a dimension on that
+  intersection or a projection of it.
+
+grain:
+  fact: ProviderPackagePrice
+  description: >-
+    One price is uniquely identified by provider x package x pricing basis. The price_id
+    encodes exactly that composite — prc_<provider_id>.<package_id>.<network_id> — so the
+    grain is readable from the identifier itself.
+  example_id: prc_5756.OB002.-3776001016975145508
+
+id_stability_warning: >-
+  Provider, Payer, Network and Package identifiers are all documented as "upstream-derived
+  from the dataset and may change as reference data is reloaded." These are NOT stable
+  primary keys. A consumer must not treat them as durable foreign keys across dataset
+  reloads; resolve by NPI (providers) or SSP code (packages) where durability matters.
+
+entities:
+- name: Provider
+  endpoint: GET /v3/providers, GET /v3/providers/{provider_id}
+  operations: [v3_list_providers, v3_get_provider]
+  key: id
+  natural_key: npi
+  natural_key_note: National Provider Identifier — the only externally stable provider key.
+  fields: [id, name, type, npi, address, context]
+  embedded: ProviderAddress (city, state, zip_code, latitude, longitude)
+  data_quality: latitude/longitude are null for ~6% of providers, per the spec description.
+  taxonomy_endpoint: GET /v3/providers/types (v3_get_provider_types)
+
+- name: Payer
+  endpoint: GET /v3/payers, GET /v3/payers/{payer_id}
+  operations: [v3_list_payers, v3_get_payer]
+  key: id
+  fields: [id, name, context]
+  data_quality: name is nullable — "null when reference data is missing."
+
+- name: Network
+  endpoint: GET /v3/networks, GET /v3/networks/{network_id}
+  operations: [v3_list_networks, v3_get_network]
+  key: id
+  key_format: string-wrapped 64-bit integer (may be negative)
+  fields: [id, name, payer, context]
+
+- name: Package
+  endpoint: GET /v3/packages, GET /v3/packages/{package_id}
+  operations: [v3_list_packages, v3_get_package]
+  key: id
+  key_note: Public Standard Service Package code (OB002, RA005, GA003).
+  fields: [id, type, name, description, anchor_codes, disclosures, context]
+  taxonomy: >-
+    type is the package taxonomy; the spec states only Standard Service Packages ('ssp')
+    are served today.
+  domain_note: >-
+    A Standard Service Package gathers every service, material and fee associated with a
+    procedure into one standardized code, so every provider is priced on the same
+    apples-to-apples definition. This is the modelling idea the whole API rests on.
+
+- name: LineItem
+  endpoint: GET /v3/packages/{package_id}/line_items
+  operations: [v3_list_package_line_items]
+  key: composite (code + code_type within a package)
+  fields: [code, code_type, fee_type, description, association_rate]
+  fee_types: [base_code, facility_fee, professional_fee, optional_fee]
+  probabilistic: >-
+    association_rate is the likelihood (0-1) that this line item is part of the package —
+    package composition is probabilistic, not fixed. An agent quoting "what's included"
+    should carry that uncertainty through.
+
+- name: ProviderPackagePrice
+  endpoint: POST /v3/prices/query, GET /v3/prices/{price_id}
+  operations: [v3_query_prices, v3_get_price]
+  key: id
+  fields: [id, provider, package, pricing, total, line_items, context]
+  expandable: [line_items]
+
+- name: PriceComparison
+  endpoint: POST /v3/prices/compare
+  operations: [v3_compare_prices]
+  kind: aggregate
+  fields: [count, stats, disclosures, meta]
+  stats: ComparisonStats — min, max, avg, median, q1, q3, each a Money.
+
+- name: PersonalizedEstimate
+  endpoint: POST /v3/personalized-estimates, POST /v3/personalized-estimates/compare
+  operations: [v3_list_personalized_estimates, v3_compare_personalized_estimates]
+  kind: derived fact
+  inputs:
+  - package_id (required)
+  - pricing.network_id (required)
+  - provider_id (optional)
+  - location (optional)
+  - member_eligibility (required)
+  outputs: [total_allowed_amount, member_cost_share, benefits_summary]
+  member_cost_share_fields:
+  - total
+  - amount_towards_deductible
+  - amount_towards_copayment
+  - amount_towards_coinsurance
+  - is_deductible_met
+  - is_out_of_pocket_max_met
+  benefits_summary_fields:
+  - remaining_deductible
+  - total_deductible
+  - remaining_out_of_pocket_max
+  - total_out_of_pocket_max
+  - deductible_accumulator_type
+  - out_of_pocket_accumulator_type
+  - benefit_categories[]
+  - limitations[]
+  accumulator_types: [embedded, aggregate, individual, zero]
+  phi: true
+  note: >-
+    This is the only entity built from member-specific data. It layers a live X12 270/271
+    eligibility response onto a ProviderPackagePrice.
+
+relationships:
+- from: Network
+  to: Payer
+  type: belongs_to
+  via: payer
+  representation: EntityRef stub ({id, name}); the full entity lives at /v3/payers/{payer_id}.
+- from: Payer
+  to: Network
+  type: has_many
+  via: /v3/networks?payer_id=
+- from: ProviderPackagePrice
+  to: Provider
+  type: belongs_to
+  via: provider
+  representation: full Provider entity, always inlined (not a stub).
+- from: ProviderPackagePrice
+  to: Package
+  type: belongs_to
+  via: package
+  representation: EntityRef stub.
+- from: ProviderPackagePrice
+  to: Network
+  type: belongs_to
+  via: pricing.network
+  conditional: only when pricing.type is "negotiated"; absent for cash prices.
+- from: ProviderPackagePrice
+  to: Payer
+  type: belongs_to
+  via: pricing.payer
+  conditional: resolved through the network; EntityRef stub.
+- from: ProviderPackagePrice
+  to: LineItem
+  type: has_many
+  via: line_items
+  conditional: present only when expand=line_items on the detail endpoint.
+- from: Package
+  to: BillingCode
+  type: has_many
+  via: anchor_codes
+  note: The package's comprehensive anchor (base) billing codes.
+- from: Package
+  to: LineItem
+  type: has_many
+  via: /v3/packages/{package_id}/line_items
+- from: Provider
+  to: ProviderAddress
+  type: has_one
+  via: address
+- from: Provider
+  to: Package
+  type: many_to_many
+  via: ProviderPackagePrice
+  note: The join carries the price; this is the fact table.
+- from: PersonalizedEstimate
+  to: ProviderPackagePrice
+  type: derives_from
+  via: package_id + pricing.network_id + provider_id
+- from: Network
+  to: PersonalizedEstimate
+  type: has_many
+  via: pricing.network_id
+  coverage_note: >-
+    Cost-share calculation is live for a named subset of networks only; negotiated rates
+    cover a much broader set.
+
+value_objects:
+- name: Money
+  fields: [amount (string decimal), minor_units (integer), currency (default USD)]
+  note: The single money shape used everywhere a monetary value appears.
+- name: EntityRef
+  fields: [id, name]
+  note: Universal reference stub; name is nullable when reference data is missing.
+- name: MatchContext
+  fields: [score (0-1 semantic similarity), distance_m]
+  note: Query-relative metadata attached to entities with a concrete location.
+- name: SearchContext
+  note: Query-relative metadata attached to non-located entities on search.
+- name: PageMeta
+  fields: [size, total, next_cursor]
+- name: ResponseMeta
+  fields: [dataset_version]
+- name: NoDataReason
+  values: [no_data, permission_denied]
+  note: >-
+    Distinguishes an empty result caused by missing data from one caused by entitlement.
+    Modelled as data rather than as an error, so it must be handled on the 200 path.
+
+counts:
+  entities: 8
+  value_objects: 8
+  relationships: 13
+  component_schemas: 76
+  operations: 15

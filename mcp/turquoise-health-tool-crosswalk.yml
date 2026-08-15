@@ -1,0 +1,125 @@
+generated: '2026-08-14'
+method: derived
+source: >-
+  mcp/turquoise-health-mcp.yml (tools + the REST endpoints the provider itself lists per
+  tool at https://turquoise.health/api/docs/mcp-reference.md) bound to the operationIds in
+  openapi/turquoise-health-consumer-pricing-openapi.yml
+note: >-
+  Confidence is high across the board because Turquoise publishes, per tool, the exact v3
+  REST endpoints that tool calls on the caller's behalf — this crosswalk maps those
+  published endpoints to their operationIds rather than guessing from tool names. The
+  tools are workflow-shaped, not one-per-endpoint, so several tools fan out to multiple
+  operations and share operations with each other. Tool input schemas are NOT captured
+  here: tools/list is OAuth-gated (HTTP 401 probed 2026-08-14), so the authoritative input
+  contract for each bound tool is the parameters + requestBody of its backing operation in
+  the OpenAPI.
+
+surfaces:
+  openapi:
+    file: openapi/turquoise-health-consumer-pricing-openapi.yml
+    spec: OpenAPI 3.1.0
+    server: https://api.turquoise.health
+    gated: true
+    gate: bearer token (OAuth 2.0 client-credentials); the spec document itself is public
+      at https://turquoise.health/api/docs/openapi.json
+  mcp:
+    url: https://consumer-mcp.turquoise.health/mcp
+    transport: streamable-http
+    gated: true
+    gate: tools/list returns 401 invalid_token without an OAuth bearer token carrying read:mcp
+  graphql: null
+
+crosswalk:
+- tool: find_entity
+  category: discovery
+  rest:
+  - v3_list_packages
+  - v3_list_providers
+  - v3_list_networks
+  - v3_list_payers
+  binding: rest
+  confidence: high
+  note: >-
+    Provider-documented fan-out. One conversational lookup ("Where can I get a colonoscopy
+    near 80202?") resolves across four list endpoints — services by name/billing code,
+    providers by name/NPI/type/location, insurance plans and networks, and payers.
+
+- tool: compare_prices
+  category: pricing
+  rest:
+  - v3_compare_prices
+  - v3_query_prices
+  binding: rest
+  confidence: high
+  note: >-
+    v3_compare_prices supplies the local price distribution (statistics); v3_query_prices
+    supplies the ranked provider prices. Both are POST endpoints taking a
+    PricesCompareRequest / PricesQueryRequest body.
+
+- tool: provider_cost_detail
+  category: pricing
+  rest:
+  - v3_query_prices
+  - v3_get_price
+  - v3_compare_prices
+  binding: rest
+  confidence: high
+  note: >-
+    Composite. v3_query_prices finds the provider's price and nearby alternatives,
+    v3_get_price with expand=line_items returns the total plus expected billing
+    components (PriceExpand enum has one member, line_items), and v3_compare_prices places
+    that price in the local market.
+
+- tool: estimate_out_of_pocket
+  category: benefits
+  rest:
+  - v3_list_personalized_estimates
+  binding: rest
+  confidence: high
+  note: >-
+    One-to-one with POST /v3/personalized-estimates. Runs a consented 270/271 member
+    eligibility check, so it additionally requires the read:eligibility scope and, for real
+    patient data, production access under a signed BAA. The member_eligibility block is
+    PHI. First call for a given patient returns 202 (eligibility check in progress);
+    subsequent calls return 200 from cache.
+
+mcp_only:
+- tool: explain_pricing
+  reason: >-
+    No backing REST operation. The provider states plainly that this tool makes no upstream
+    call and returns static methodology content (how a price was derived and how to
+    interpret it), sourced from the pricing-methodology documentation.
+
+rest_only:
+- operation: v3_get_provider_types
+  capability: reference data
+  note: Enumerates valid provider-type filter values; folded into find_entity's parameters
+    rather than exposed as its own tool.
+- operation: v3_get_provider
+  capability: entity detail
+  note: Single-provider detail; the MCP surface reaches providers through find_entity
+    and provider_cost_detail instead.
+- operation: v3_get_payer
+  capability: entity detail
+- operation: v3_get_network
+  capability: entity detail
+- operation: v3_get_package
+  capability: entity detail
+- operation: v3_list_package_line_items
+  capability: package composition
+  note: >-
+    Lists a Standard Service Package's contents. provider_cost_detail surfaces billing
+    components via v3_get_price?expand=line_items, not via this package-level endpoint.
+- operation: v3_compare_personalized_estimates
+  capability: benefits
+  note: >-
+    Compares personalized prices across providers for a package. No MCP tool binds it;
+    estimate_out_of_pocket binds only the non-compare personalized-estimates endpoint.
+
+coverage:
+  tools_named: 5
+  tools_bound_to_rest: 4
+  mcp_only: 1
+  rest_operations_total: 15
+  rest_operations_with_a_tool: 8
+  rest_only: 7

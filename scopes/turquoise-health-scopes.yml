@@ -1,0 +1,56 @@
+generated: '2026-08-14'
+method: searched
+source: https://turquoise.health/api/docs/llms.txt
+docs: https://turquoise.health/api/docs/mcp-reference/
+note: >-
+  derive-oauth-scopes.py found no oauth2 securityScheme in the OpenAPI (the spec declares
+  only http/bearer schemes and no flow scopes), so there is no derived baseline to build
+  on. Every scope below comes from the provider's own published documentation — the
+  llms.txt MCP block and the MCP reference — not from the spec. Turquoise does not publish
+  a dedicated scopes/permissions reference page; these are the only two scopes named
+  anywhere in the public docs, so this list is documented-complete rather than
+  registry-complete.
+
+schemes:
+- name: OAuth2 client credentials
+  source: https://turquoise.health/api/docs/start-building.md
+  flows:
+  - flow: clientCredentials
+    tokenUrl: https://api.turquoise.health/oauth/token
+
+scopes:
+- scope: read:mcp
+  description: >-
+    Required on every token used against the MCP endpoint
+    (https://consumer-mcp.turquoise.health/mcp). A token without it is rejected with HTTP
+    403 ("Token is valid but not granted correct scope").
+  flows: [clientCredentials]
+  surfaces: [mcp]
+  sources: [https://turquoise.health/api/docs/llms.txt, https://turquoise.health/api/docs/mcp-reference.md]
+- scope: read:eligibility
+  description: >-
+    Additionally required by the estimate_out_of_pocket MCP tool and, by extension, the
+    consented 270/271 member eligibility check behind POST /v3/personalized-estimates. For
+    real patient data this scope also requires production access under a signed Business
+    Associate Agreement.
+  flows: [clientCredentials]
+  surfaces: [mcp, rest]
+  requires_baa: true
+  sources: [https://turquoise.health/api/docs/llms.txt]
+
+metadata_discovery:
+  authorization_server: https://consumer-mcp.turquoise.health/.well-known/oauth-authorization-server
+  protected_resource: https://consumer-mcp.turquoise.health/.well-known/oauth-protected-resource/mcp
+  metadata_note: >-
+    The RFC 8414 document advertises scopes_supported [openid, profile, email] and
+    grant_types_supported [authorization_code, refresh_token] — that is the INTERACTIVE
+    browser sign-in path for MCP clients, a different grant from the server-to-server
+    client-credentials flow the docs describe. The RFC 9728 protected-resource document
+    returns an EMPTY scopes_supported array, so neither metadata document advertises
+    read:mcp or read:eligibility. That is a real discovery gap: the scopes an integrator
+    must request are documented in prose only.
+
+insufficient_scope_error:
+  http: 403
+  code: insufficient_scope
+  message: Token is valid but not granted correct scope.

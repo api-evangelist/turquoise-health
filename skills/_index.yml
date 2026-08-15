@@ -1,0 +1,44 @@
+generated: '2026-08-14'
+method: generated
+source: >-
+  Authored from openapi/turquoise-health-consumer-pricing-openapi.yml (every operationId
+  verified against the spec), the published documentation at
+  https://turquoise.health/api/docs/, and the conventions/errors/sandbox artifacts in this
+  repository. Turquoise publishes no AGENTS.md or first-party skill files — searched
+  2026-08-14.
+skills:
+- file: turquoise-health-price-a-shoppable-service.md
+  name: Price a shoppable healthcare service
+  api: openapi/turquoise-health-consumer-pricing-openapi.yml
+  operations:
+  - v3_list_packages
+  - v3_list_providers
+  - v3_list_networks
+  - v3_query_prices
+  - v3_compare_prices
+  - v3_get_price
+- file: turquoise-health-personalized-out-of-pocket-estimate.md
+  name: Produce a personalized out-of-pocket estimate
+  api: openapi/turquoise-health-consumer-pricing-openapi.yml
+  operations:
+  - v3_list_packages
+  - v3_list_networks
+  - v3_list_providers
+  - v3_list_personalized_estimates
+  - v3_compare_personalized_estimates
+  required_scopes: [read:eligibility]
+  handles_phi: true
+- file: turquoise-health-connect-the-mcp-server.md
+  name: Connect to the Turquoise Consumer Pricing MCP server
+  api: mcp/turquoise-health-mcp.yml
+  mcp_endpoint: https://consumer-mcp.turquoise.health/mcp
+  required_scopes: [read:mcp]
+  operations:
+  - v3_list_packages
+  - v3_list_providers
+  - v3_list_networks
+  - v3_list_payers
+  - v3_query_prices
+  - v3_compare_prices
+  - v3_get_price
+  - v3_list_personalized_estimates

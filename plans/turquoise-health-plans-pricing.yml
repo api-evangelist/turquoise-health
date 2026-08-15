@@ -1,12 +1,35 @@
 name: Turquoise Health Plans and Pricing
+generated: '2026-08-14'
+method: searched
+source: https://turquoise.health/plans/providers
 description: >-
   Turquoise Health offers tiered pricing plans for providers, payers, and life
   sciences organizations. All plans feature customized pricing based on
   organizational needs. No public pricing tiers are disclosed; contact is
   required for quotes. A free Standard Service Packages (SSP) API is also
   available.
-version: '0.1'
+version: '0.2'
 url: https://turquoise.health/plans/providers
+plan_count: 3
+public_pricing: false
+pricing_note: >-
+  Three named tiers are published with their feature sets, but NO price, currency, billing
+  period, quota or overage is disclosed for any of them — every tier is "custom, contact
+  us". The Consumer Pricing API and MCP server sit outside these three platform tiers:
+  API access is self-serve for a free demo account
+  (https://turquoise.health/signup/?signupContext=api) and sales-gated for production,
+  and no API-specific price, call quota or metering model is published anywhere.
+api_access:
+  demo:
+    cost: free
+    self_serve: true
+    url: https://turquoise.health/signup/?signupContext=api
+    restriction: No live patient data / PHI may be exchanged.
+  production:
+    cost: not published
+    self_serve: false
+    url: https://turquoise.health/request-a-demo
+    prerequisite: Signed Business Associate Agreement (BAA) for PHI-bearing endpoints.
 
 plans:
   - name: Market Intelligence

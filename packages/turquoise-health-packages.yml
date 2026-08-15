@@ -1,28 +1,82 @@
-generated: '2026-07-21'
+generated: '2026-08-14'
 method: searched
-source: https://registry.npmjs.org (npm scope @turquoisehealth)
+source: https://registry.npmjs.org (npm scope @turquoisehealth), pypi.org, github.com/turquoisehealth
 note: >-
-  Only first-party packages found are Turquoise Health's design-system / CSS framework.
-  These are UI/design packages, NOT API client SDKs, so no `SDKs` pointer is emitted
-  (the provider publishes no public API client library). PyPI, and other registries
-  returned no first-party Turquoise Health packages.
+  Re-checked 2026-08-14 against the registry metadata endpoints. The only first-party
+  published packages remain Turquoise Health's design system / CSS framework. These are
+  UI packages, NOT API client SDKs, so NO `SDKs` pointer is emitted — Turquoise publishes
+  no client library for the Consumer Pricing API in any language. Its own documented
+  quickstarts use raw `requests` / `fetch` / `curl`, and the MCP examples use the generic
+  `mcp` and `@modelcontextprotocol/sdk` packages, which are Anthropic's, not Turquoise's.
+  PyPI has no turquoise-health, turquoise or hpt-validator package (all 404).
+sdk_count: 0
+sdk_gap: >-
+  A well-formed public OpenAPI 3.1.0 with 15 operations and no generated client in any
+  language is the clearest single gap on this provider's developer surface. The spec is
+  generator-ready today.
+
 packages:
 - language: javascript
   registry: npm
   name: "@turquoisehealth/pit-viper"
   url: https://www.npmjs.com/package/@turquoisehealth/pit-viper
   install: npm install @turquoisehealth/pit-viper
-  version: 2.212.0
+  version: 2.224.0
+  published: '2026-08-14'
+  release_count: 556
   license: MIT
   repository: https://github.com/turquoisehealth/pit-viper
   category: design-system
   official: true
+  api_client: false
+  note: >-
+    Actively maintained — the latest release landed the same day this was checked, across
+    556 published versions. Turquoise's engineering output is real and current; it is
+    simply not pointed at an API client.
 - language: javascript
   registry: npm
   name: th-pit-viper
   url: https://www.npmjs.com/package/th-pit-viper
   install: npm install th-pit-viper
   version: 1.94.0
+  published: '2025-05-13'
+  release_count: 246
+  license: MIT
   repository: https://github.com/turquoisehealth/pit-viper
   category: css-framework
   official: true
+  api_client: false
+  note: >-
+    Predecessor of the scoped @turquoisehealth/pit-viper package; same repository, last
+    published 2025-05-13 and effectively superseded.
+
+registries_checked:
+- registry: npm
+  result: 2 first-party packages (design system only)
+- registry: pypi
+  result: none
+  probed: [turquoise-health (404), turquoise (404), hpt-validator (404)]
+- registry: rubygems
+  result: none
+- registry: crates.io
+  result: none
+- registry: packagist
+  result: none
+- registry: nuget
+  result: none
+- registry: maven central
+  result: none
+- registry: pkg.go.dev
+  result: none
+
+not_first_party:
+- name: hpt-validator-cli
+  repo: https://github.com/turquoisehealth/hpt-validator-cli
+  why_excluded: >-
+    Present in the turquoisehealth GitHub org but NOT a Turquoise product. package.json
+    declares author "CMS Open Source <opensource@cms.hhs.gov>" and license CC0-1.0, and the
+    binary is named cms-hpt-validator. This is a fork of the CMS Hospital Price
+    Transparency validator, so it is not recorded as a first-party Turquoise CLI and no
+    CLI pointer is emitted on its basis.
+- name: pyx12 / TigerShark / asynch / django-import-export-celery / langchain-aws / pinot-dbapi
+  why_excluded: Forks of third-party open-source projects hosted in the org.

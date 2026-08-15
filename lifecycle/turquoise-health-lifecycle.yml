@@ -1,0 +1,105 @@
+generated: '2026-08-14'
+method: searched
+source: https://turquoise.health/api/docs/api-reference.md
+derived_from: openapi/turquoise-health-consumer-pricing-openapi.yml
+note: >-
+  Searched the developer docs, the marketing site footer and the docs navigation for a
+  changelog, status page, deprecation policy, SLA and Sunset/Deprecation header support.
+  None of the five is published. This is the weakest part of Turquoise's otherwise strong
+  developer surface, and the absences below are recorded as measured absences rather than
+  omitted — no StatusPage and no Deprecation pointer is emitted in apis.yml, because
+  neither page exists.
+
+versioning:
+  scheme: uri-path
+  current: v3
+  path_prefix: /v3
+  spec_version: 0.1.0
+  spec_version_note: >-
+    info.version in the OpenAPI is 0.1.0 while the API surface itself is v3. The document
+    version and the API version are on different tracks; the /v3 path prefix is the one
+    that matters to a caller.
+  docs: https://turquoise.health/api/docs/api-reference/
+  policy_published: false
+
+maturity:
+  rest_api: generally available
+  mcp_server: Public Preview
+  mcp_maturity_source: https://turquoise.health/api/docs/mcp-reference.md
+  personalized_estimates:
+    status: limited availability
+    note: >-
+      Cost-share calculation is live for a named subset of payers and networks (Aetna POS,
+      Anthem CA PPO, Anthem NY Empire PPO, 30 BCBS plans, Cigna National OAP, United
+      Healthcare Choice Plus) and expanding on a rolling basis. Negotiated rates are
+      returned for a much broader set. The provider publishes the live network list rather
+      than implying full coverage.
+
+prior_versions:
+- version: v2
+  status: unpublished
+  evidence: >-
+    components.schemas still carries ConsumerPricingV2ErrorCode and a full set of
+    ConsumerSite*V2 schemas (ConsumerSiteListPricesInputV2, ConsumerSitePriceComparisonInputV2,
+    ConsumerSiteProviderBreakdownInputV2, ConsumerSitePersonalizedEstimateErrorPayloadV2,
+    …), but no /v2 path appears in the published OpenAPI document.
+  sunset_date: not published
+  note: >-
+    A v2 surface evidently exists or recently existed for some callers. Turquoise publishes
+    no sunset date, no migration guide and no deprecation notice for it.
+
+deprecation:
+  policy_url: null
+  policy_published: false
+  sunset_header: not documented
+  deprecation_header: not documented
+  rfc8594: false
+  deprecated_operations: []
+  deprecated_operations_note: No operation in the OpenAPI carries deprecated:true.
+
+change_log:
+  published: false
+  probed:
+  - url: https://turquoise.health/api/docs/changelog
+    status: 404
+  - url: https://turquoise.health/api/docs/changelog.md
+    status: 404
+  note: >-
+    No dated changelog on the docs host and no changelog entry in the docs navigation
+    (the nav is Introduction, Data Coverage, Pricing Methodology, Personalized Estimates,
+    Start Building, API Reference, MCP Reference). No changelog/ artifact is written.
+
+status_page:
+  published: false
+  probed:
+  - url: https://status.turquoise.health
+    status: 000
+    note: DNS does not resolve
+  - url: https://turquoise.health/status
+    status: 404
+  note: >-
+    No status page exists, so no StatusPage pointer is wired. Notable given the API
+    publishes three distinct upstream-failure codes (unavailable_payer,
+    eligibility_service_error, pricing_unavailable) that a caller would want to correlate
+    against a public incident feed.
+
+sla:
+  url: null
+  uptime_target: not published
+  note: >-
+    No public SLA. Enterprise plans are custom-priced, so availability commitments are
+    presumably contractual rather than published.
+
+data_freshness:
+  field: meta.dataset_version
+  schema: ResponseMeta
+  status: reserved
+  note: >-
+    The response envelope reserves a dataset_version marker but the spec documents it as
+    "null until the loader exposes one" — so the freshness signal is declared but not yet
+    populated.
+
+support:
+  contact: info@turquoise.health
+  demo_request: https://turquoise.health/request-a-demo
+  help_center: not published

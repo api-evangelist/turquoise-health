@@ -1,0 +1,185 @@
+generated: '2026-08-14'
+method: searched
+source: openapi/turquoise-health-consumer-pricing-openapi.yml
+docs:
+- https://turquoise.health/api/docs/api-reference.md
+- https://turquoise.health/api/docs/personalized-estimates.md
+format: vendor
+rfc9457: false
+note: >-
+  Derived from the OpenAPI 4xx/5xx responses and the ErrorCode / PersonalizedEstimateErrorCode
+  enums, then enriched with the patient-facing messages Turquoise publishes in the
+  Personalized Estimates error table. Not RFC 9457 problem+json — responses are
+  application/json carrying a vendor envelope — but the code registry is explicitly stable
+  and the docs instruct callers to switch on it, which is the property that matters for
+  agents.
+
+envelope:
+  content_type: application/json
+  shape: '{"error": {"code": ..., "message": ..., "hint": ..., "expected": ..., "received": ..., "field": ...}}'
+  required: [code, message]
+  schemas: [ErrorResponse, ErrorPayload, ErrorCode]
+  fields:
+    code: Stable, documented error code. Switch on this in code.
+    message: Human-readable error summary.
+    hint: Actionable suggestion for the caller, when applicable.
+    expected: What the API expected.
+    received: What the API actually received.
+    field: Dot-path of the offending request field.
+
+http_status_map:
+- status: 400
+  meaning: Malformed parameters
+- status: 401
+  meaning: Missing or expired token
+- status: 403
+  meaning: Token valid but not granted the correct scope
+- status: 404
+  meaning: Resource not found
+- status: 422
+  meaning: Validation error
+- status: 429
+  meaning: Rate limit; back off and retry
+- status: 500
+  meaning: Server error
+- status: 502
+  meaning: Upstream failure (personalized-estimates only)
+- status: 503
+  meaning: Service temporarily unavailable (personalized-estimates only)
+
+problems:
+- code: invalid_request
+  status: 400
+  title: Invalid request
+  registry: v3
+  remediation: Correct the request against the field/expected/received values in the payload.
+- code: invalid_id_format
+  status: 400
+  title: Identifier is not a well-formed ID
+  registry: v3
+  remediation: >-
+    Check the identifier shape for the resource — network_id is a string-wrapped 64-bit
+    integer, package_id is an SSP code, price_id is provider.package.network.
+- code: invalid_expand
+  status: 400
+  title: Unknown expand value
+  registry: v3
+  remediation: The only valid expand value today is line_items (PriceExpand enum).
+- code: conflicting_parameters
+  status: 400
+  title: Mutually exclusive parameters supplied
+  registry: v3
+  remediation: >-
+    Most often a location conflict — send exactly one of location.near, location.within or
+    location.zip.
+- code: location_ambiguous
+  status: 400
+  title: Location could not be narrowed to one place
+  registry: v3
+  remediation: Supply a more specific location, or use lat/lng with a radius.
+- code: unresolvable_location
+  status: 400
+  title: Location could not be resolved
+  registry: v3
+  remediation: Verify the ZIP, state or CBSA value.
+- code: insufficient_scope
+  status: 403
+  title: Token lacks the required scope
+  registry: v3
+  remediation: >-
+    Mint a token carrying read:mcp for the MCP surface, or read:eligibility for
+    personalized estimates.
+- code: permission_denied
+  status: 403
+  title: Permission denied
+  registry: v3
+  remediation: The organization is not entitled to this data. Contact Turquoise.
+- code: not_found
+  status: 404
+  title: Resource not found
+  registry: v3
+- code: rate_limited
+  status: 429
+  title: Rate limit exceeded
+  registry: v3
+  remediation: Back off and retry. No Retry-After header is published.
+- code: search_unavailable
+  status: 500
+  title: Semantic search backend unavailable
+  registry: v3
+  remediation: Retry, or fall back to the structured name/npi/type filters.
+
+personalized_estimate_problems:
+  applies_to:
+  - v3_list_personalized_estimates
+  - v3_compare_personalized_estimates
+  patient_facing_note: >-
+    Turquoise states these messages are written to be shown to the patient so they can
+    retry with corrected details. Most are 422s tied to member matching or coverage.
+  problems:
+  - code: invalid_member_id
+    status: 422
+    message: Member ID does not match the payer's requirements. Retry with different member information.
+  - code: invalid_dob
+    status: 422
+    message: We were not able to find your insurance with the date of birth provided. Retry with different member information.
+  - code: invalid_member_name
+    status: 422
+    message: We were not able to find your insurance with the name provided. Retry with different member information.
+  - code: member_not_found
+    status: 422
+    message: No member found matching the details provided. Retry with different member information.
+  - code: no_active_coverage
+    status: 422
+    message: A member was found but has no active coverage. Try again with different member information.
+  - code: unsupported_tpa
+    status: 422
+    message: This plan is managed by <tpa_name>, which is not currently supported.
+  - code: plan_not_found
+    status: 422
+  - code: invalid_json
+    status: 400
+  - code: unauthorized
+    status: 401
+  - code: forbidden
+    status: 403
+  - code: authorization_unavailable
+    status: 503
+  - code: unavailable_payer
+    status: 500
+    message: The payer is temporarily unavailable. Please retry later.
+  - code: eligibility_service_error
+    status: 500
+    message: Eligibility service error. An unexpected error occurred.
+  - code: internal_server_error
+    status: 500
+    message: An unexpected error occurred.
+  - code: pricing_unavailable
+    status: 503
+    message: The pricing service is temporarily unavailable. Please retry later.
+
+non_error_signals:
+- schema: NoDataReason
+  values: [no_data, permission_denied]
+  note: >-
+    A 200 response can still carry no priced result. NoDataReason distinguishes "we have
+    no data for this combination" from "your organization is not entitled to see it" —
+    an important difference for an agent, and one that would otherwise be invisible
+    because neither case is an HTTP error.
+- status: 202
+  applies_to: v3_list_personalized_estimates
+  meaning: >-
+    Eligibility check in progress; retry after a short delay. Not an error — the expected
+    first response for a patient whose eligibility is not yet cached.
+
+legacy_registry:
+  schema: ConsumerPricingV2ErrorCode
+  note: >-
+    An uppercase v2 code registry (INVALID_REQUEST, LOCATION_REQUIRED, INSUFFICIENT_DATA,
+    INVALID_STATE_FORMAT, …) still ships in components.schemas but no v2 path is published.
+    The v3 registry is lowercase. Callers handling both surfaces must match
+    case-insensitively; Turquoise's own PersonalizedEstimateErrorCode enum mixes the two
+    cases in a single enum, which is a real footgun.
+
+see_also:
+- conventions/turquoise-health-conventions.yml

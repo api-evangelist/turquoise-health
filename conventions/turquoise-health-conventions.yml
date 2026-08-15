@@ -1,0 +1,224 @@
+generated: '2026-08-14'
+method: searched
+source: https://turquoise.health/api/docs/api-reference.md
+derived_from: openapi/turquoise-health-consumer-pricing-openapi.yml
+docs: https://turquoise.health/api/docs/api-reference/
+note: >-
+  Turquoise publishes a compact "Conventions" block in the API reference covering auth,
+  pagination, money and search. Everything below is either lifted from that block or read
+  directly out of the OpenAPI parameter/schema definitions. Where a convention is absent
+  it is recorded as absent — see `idempotency` and `rate_limit_signaling`, both of which
+  are genuinely undocumented rather than merely uncaptured.
+
+base_url: https://api.turquoise.health
+media_type: application/json
+media_type_note: All endpoints use JSON request and response bodies.
+
+authentication:
+  style: bearer
+  header: 'Authorization: Bearer <token>'
+  obtained_via: OAuth 2.0 client-credentials at https://api.turquoise.health/oauth/token
+  applies_to_every_request: true
+  detail: authentication/turquoise-health-authentication.yml
+
+idempotency:
+  supported: false
+  evidence: >-
+    No Idempotency-Key header, no idempotency parameter and no occurrence of the string
+    "idempoten" anywhere in the OpenAPI document or in any of the seven published docs
+    pages (checked 2026-08-14). No Idempotency pointer is emitted in apis.yml.
+  practical_impact: >-
+    Three of the fifteen operations are POSTs (v3_query_prices, v3_compare_prices,
+    v3_list_personalized_estimates and v3_compare_personalized_estimates). They are POSTs
+    because their filter bodies are too large for a query string, not because they mutate
+    state, so a retry is semantically safe. The personalized-estimates endpoint does have
+    a real retry protocol, but it is a 202/poll pattern rather than an idempotency key —
+    see async_retry below.
+
+pagination:
+  style: cursor
+  request_params:
+  - name: page_size
+    in: query
+    type: integer
+    default: 25
+    minimum: 1
+    maximum: 250
+  - name: cursor
+    in: query
+    type: string
+    description: Opaque cursor from a previous page.next_cursor.
+  response_envelope: page
+  response_fields:
+  - name: size
+    description: Number of items in this page.
+  - name: total
+    description: Count of the full filtered set, not just this page.
+  - name: next_cursor
+    description: Opaque cursor for the next page; null when exhausted.
+  termination: next_cursor is null when the set is exhausted.
+  schema: PageMeta
+
+envelope:
+  list: ListEnvelope_<T>
+  list_note: >-
+    List responses use a generic ListEnvelope carrying items plus a page (PageMeta) block
+    and a meta (ResponseMeta) block. Concrete instantiations in the spec are
+    ListEnvelope_Provider_, ListEnvelope_Payer_, ListEnvelope_Network_,
+    ListEnvelope_Package_, ListEnvelope_LineItem_ and ListEnvelope_ProviderPackagePrice_.
+  meta:
+    dataset_version: >-
+      Version marker of the underlying dataset; documented as null until the loader
+      exposes one. This is the closest thing the API has to a data-freshness signal.
+
+search:
+  style: semantic
+  params:
+  - name: search
+    description: Semantic search over entity names; composable with the structured filters.
+  - name: min_score
+    description: Minimum similarity threshold, 0.0-1.0.
+  response_context:
+    schema: MatchContext
+    fields:
+    - score — semantic similarity (0-1)
+    - distance_m — distance from the search anchor in meters
+  note: >-
+    Search relevance is returned per item rather than only ranked, so a caller can apply
+    its own cut-off. This is unusual and worth using.
+
+field_expansion:
+  supported: true
+  param: expand
+  style: array of enum values
+  schema: PriceExpand
+  values:
+  - line_items
+  applies_to: GET /v3/prices/{price_id}
+  note: >-
+    Only one expandable relation exists today. expand is validated: an unknown value
+    returns the invalid_expand error code.
+
+money:
+  schema: Money
+  description: The single money shape used everywhere a monetary value appears.
+  fields:
+  - name: amount
+    type: string
+    description: String-decimal value, e.g. "1250.00".
+  - name: minor_units
+    type: integer
+    description: Integer minor units, e.g. 125000.
+  - name: currency
+    type: string
+    default: USD
+    description: ISO currency code. Always USD today.
+  note: >-
+    Both a string decimal and an integer minor-units representation are returned on every
+    money value, so a client never has to parse or round a float.
+
+location_filtering:
+  styles:
+  - name: near
+    params: [location.near.lat, location.near.lng, location.near.radius_m]
+  - name: within
+    params: [location.within.state, location.within.cbsa, location.within.zip_codes]
+  - name: zip
+    params: [location.zip]
+    description: Resolves the ZIP to its centroid, then runs a radius search.
+  errors:
+  - location_ambiguous
+  - unresolvable_location
+  - conflicting_parameters
+
+identifiers:
+  style: opaque strings
+  examples:
+  - provider_id — "5756"
+  - payer_id — "76"
+  - network_id — "-3776001016975145508" (string-wrapped 64-bit integer)
+  - package_id — "OB002", "RA005", "GA003" (Standard Service Package codes)
+  - price_id — "prc_5756.OB002.-3776001016975145508" (composite of provider.package.network)
+  note: >-
+    price_id is a readable composite of the three identifiers that produced it, so a
+    caller can construct and decompose it. package_id values are the public SSP codes.
+    Validation failures surface as invalid_id_format.
+
+versioning:
+  scheme: uri-path
+  current: v3
+  path_prefix: /v3
+  note: >-
+    A v2 surface still exists in the schema registry (ConsumerPricingV2ErrorCode,
+    ConsumerSite*V2 schemas) but no v2 path is published in the OpenAPI document — only
+    /v3 paths are exposed. No deprecation dates or Sunset headers are published for v2.
+  detail: lifecycle/turquoise-health-lifecycle.yml
+
+error_envelope:
+  format: vendor
+  rfc9457: false
+  shape:
+    error:
+      code: Stable, documented error code (ErrorCode enum).
+      message: Human-readable error summary.
+      hint: Actionable suggestion for the caller, when applicable.
+      expected: What the API expected.
+      received: What the API actually received.
+      field: Dot-path of the offending request field.
+  required: [code, message]
+  content_type: application/json
+  note: >-
+    Not RFC 9457 problem+json, but structurally close and arguably more useful for
+    machine handling: a stable enum code the docs tell you to switch on, plus
+    expected/received/field for programmatic repair. Detail:
+    errors/turquoise-health-problem-types.yml
+
+async_retry:
+  applies_to: POST /v3/personalized-estimates
+  pattern: 202-then-poll
+  description: >-
+    The first query for a given patient returns HTTP 202 "Eligibility check in progress,
+    retry after a short delay" because the real-time 270/271 eligibility check takes a few
+    seconds. Subsequent queries for the same patient return 200 and are faster because the
+    eligibility response is cached.
+  retry_after_header: not documented
+
+rate_limit_signaling:
+  documented: false
+  status_on_exhaustion: 429
+  error_code: rate_limited
+  documented_guidance: '"Rate limit; back off and retry" (API reference, Errors block)'
+  headers: []
+  headers_note: >-
+    Turquoise publishes no X-RateLimit-*, RateLimit-* or Retry-After header contract, and
+    the OpenAPI declares no response headers on any operation including the 429s. A caller
+    must infer backoff rather than read it. Detail:
+    rate-limits/turquoise-health-rate-limits.yml
+
+request_tracing:
+  request_id_header: not documented
+  note: No correlation/request-id header is documented or declared in the spec.
+
+compliance_conventions:
+  phi_fields:
+  - member_eligibility.first_name
+  - member_eligibility.last_name
+  - member_eligibility.date_of_birth
+  - member_eligibility.member_id
+  consent_attestation:
+    field: member_eligibility.consent_attested
+    required_value: true
+    meaning: >-
+      Caller's representation that the patient consented to the eligibility check,
+      consistent with their BAA.
+  note: >-
+    A consent attestation carried in the request body on every PHI-bearing call is a
+    genuine agent-safety convention and the reason estimate_out_of_pocket is gated behind
+    a separate scope.
+
+see_also:
+- authentication/turquoise-health-authentication.yml
+- errors/turquoise-health-problem-types.yml
+- lifecycle/turquoise-health-lifecycle.yml
+- rate-limits/turquoise-health-rate-limits.yml
+- scopes/turquoise-health-scopes.yml

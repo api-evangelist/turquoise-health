@@ -1,0 +1,10 @@
+{
+    "resource": "https://consumer-mcp.turquoise.health/mcp",
+    "authorization_servers": [
+        "https://consumer-mcp.turquoise.health/"
+    ],
+    "scopes_supported": [],
+    "bearer_methods_supported": [
+        "header"
+    ]
+}

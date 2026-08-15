@@ -1,0 +1,91 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Turquoise Health Consumer Pricing API
+  version: 1.0.0
+extends: openapi/turquoise-health-consumer-pricing-openapi.yml
+x-generated: '2026-08-14'
+x-method: generated
+x-source: >-
+  Derived from artifacts in this repository. Captures API Evangelist enhancements without
+  mutating the harvested spec at
+  openapi/_original/turquoise-health-consumer-pricing-openapi-original.json. The upstream
+  document declares two securitySchemes but applies neither via a global security[]
+  requirement — the largest single gap in an otherwise well-formed spec, since every
+  operation does in fact require a bearer token. This overlay records that, plus contact,
+  licence, servers description and the cross-artifact links.
+actions:
+- target: $.info
+  update:
+    description: >-
+      Consumer-friendly healthcare price estimates — cash and insurer-negotiated rates —
+      for shoppable services, plus personalized out-of-pocket estimates computed from a
+      member's live benefits and accumulators. Available as a REST API and as a hosted MCP
+      server for AI agents. All endpoints require an OAuth 2.0 client-credentials bearer
+      token minted at https://api.turquoise.health/oauth/token.
+    contact:
+      name: Turquoise Health
+      email: info@turquoise.health
+      url: https://turquoise.health/api/docs/
+    termsOfService: https://turquoise.health/legal/terms-of-service
+    x-apievangelist-slug: turquoise-health
+    x-apievangelist-artifacts:
+      authentication: authentication/turquoise-health-authentication.yml
+      scopes: scopes/turquoise-health-scopes.yml
+      conventions: conventions/turquoise-health-conventions.yml
+      errors: errors/turquoise-health-problem-types.yml
+      lifecycle: lifecycle/turquoise-health-lifecycle.yml
+      conformance: conformance/turquoise-health-conformance.yml
+      data_model: data-model/turquoise-health-data-model.yml
+      sandbox: sandbox/turquoise-health-sandbox.yml
+      mcp: mcp/turquoise-health-mcp.yml
+      tool_crosswalk: mcp/turquoise-health-tool-crosswalk.yml
+      skills: skills/_index.yml
+
+- target: $
+  update:
+    externalDocs:
+      description: Turquoise Consumer Pricing API documentation
+      url: https://turquoise.health/api/docs/
+    security:
+    - BearerAuth: []
+    x-apievangelist-note-security: >-
+      ADDED BY OVERLAY. The upstream document defines BearerAuth and PartnerBearerToken in
+      components.securitySchemes but declares no root-level security[] and no per-operation
+      security[]. As written, the spec says every operation is unauthenticated, which is
+      false — api.turquoise.health returns 401 on every path without an Authorization
+      header. This overlay applies the documented requirement so generated clients send
+      the token.
+
+- target: $.servers
+  update:
+  - url: https://api.turquoise.health
+    description: Production. The same host serves demo and production accounts; entitlement
+      is carried by the token, not the URL.
+
+- target: $.tags
+  update:
+  - name: Consumer Pricing
+    description: >-
+      Providers, payers, networks, Standard Service Packages, negotiated and cash prices,
+      and personalized member out-of-pocket estimates.
+    externalDocs:
+      url: https://turquoise.health/api/docs/api-reference/
+
+- target: $.components.schemas.Money
+  update:
+    x-apievangelist-note: >-
+      Both a string decimal (amount) and integer minor_units are returned on every monetary
+      value, so a client never parses or rounds a float. Prefer minor_units for arithmetic.
+
+- target: $.components.schemas.NoDataReason
+  update:
+    x-apievangelist-note: >-
+      Returned on a 200, not an error. Distinguishes "no data for this combination" from
+      "your organization is not entitled to see it" — both must be handled on the success path.
+
+- target: $.components.schemas.ErrorCode
+  update:
+    x-apievangelist-note: >-
+      Stable lowercase registry for the v3 surface. Note that
+      PersonalizedEstimateErrorCode mixes these lowercase v3 codes with uppercase v2 codes
+      in one enum; match case-insensitively when handling both surfaces.

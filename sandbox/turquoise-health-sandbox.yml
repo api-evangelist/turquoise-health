@@ -1,0 +1,115 @@
+generated: '2026-08-14'
+method: searched
+source: https://turquoise.health/api/docs/start-building.md
+docs:
+- https://turquoise.health/api/docs/start-building/
+- https://turquoise.health/api/docs/personalized-estimates/#hipaa
+note: >-
+  Turquoise separates test from production by ACCOUNT ENTITLEMENT, not by key prefix or a
+  mode flag. There is one host and one token shape; what differs is whether the account
+  behind the credentials has production access and a signed BAA. That is an unusual and
+  worth-noting design: a caller cannot tell test from live by inspecting the token or the
+  URL. No magic test values, test cards or fixture triggers are published — the demo
+  account queries the same real price corpus, it is only barred from real PHI.
+
+separation:
+  model: account-entitlement
+  key_prefix_test: none published
+  key_prefix_live: none published
+  mode_parameter: none
+  distinct_host: false
+  note: >-
+    Both demo and production credentials mint tokens at
+    https://api.turquoise.health/oauth/token and call https://api.turquoise.health.
+
+environments:
+- name: Demo
+  access: self-serve
+  signup: https://turquoise.health/signup/?signupContext=api
+  credentials: client_id, client_secret, organization_id
+  cost: free
+  data:
+    pricing: real — the demo account queries the live price corpus
+    phi: prohibited
+  restrictions:
+  - >-
+    "The demo environment does not accept live patient data, and no PHI may be exchanged."
+    POST /v3/personalized-estimates cannot be exercised with real member details.
+  - >-
+    Eligibility (270/271) checks against real payers require production access, so the
+    personalized-estimate flow is not fully testable in demo.
+- name: Production
+  access: sales-gated
+  request: https://turquoise.health/request-a-demo
+  prerequisites:
+  - Production access enabled by Turquoise
+  - Signed Business Associate Agreement (BAA) with Turquoise
+  data:
+    phi: permitted, under the BAA
+  attestation:
+    field: member_eligibility.consent_attested
+    required_value: true
+    meaning: >-
+      "By setting consent_attested to true, you represent to us that you obtained the
+      patient's consent, consistent with your BAA."
+
+test_values:
+  published: false
+  note: >-
+    No test card numbers, magic member IDs, synthetic patients or trigger values are
+    published. The values that appear in the docs (member_id "MBR-000-EXAMPLE", Jane Doe,
+    date_of_birth 1990-01-01) are illustrative request-shape examples, NOT working test
+    fixtures — they are not documented as resolvable and are not recorded here as such.
+  gap: >-
+    The single hardest thing to build against this API is the personalized-estimate flow,
+    and it is the one thing with no sandbox fixture. A synthetic member whose eligibility
+    check resolves deterministically in demo would be the highest-value addition to this
+    surface.
+
+real_identifiers_in_spec:
+  note: >-
+    The OpenAPI does carry real, resolvable example values usable for exploratory calls on
+    a demo account — these are published examples in the spec, not credentials.
+  examples:
+  - parameter: npi
+    value: '1417946021'
+  - parameter: provider_id
+    value: '5756'
+  - parameter: payer_id
+    value: '76'
+  - parameter: network_id
+    value: '-3776001016975145508'
+  - parameter: package_id
+    values: [OB002, RA005, GA003]
+  - parameter: price_id
+    value: prc_5756.OB002.-3776001016975145508
+  - parameter: location.near.lat / lng / radius_m
+    values: [39.745961, -104.971559, 25000]
+  - parameter: location.within.state
+    value: CO
+  - parameter: location.within.cbsa
+    value: Denver-Aurora-Centennial, CO
+
+test_clock: not published
+fixture_tooling: not published
+
+first_call:
+  description: The provider's own documented first call, runnable with demo credentials.
+  request: |
+    curl --request POST \
+      --url https://api.turquoise.health/v3/prices/query \
+      --header "Authorization: Bearer <token>" \
+      --header "Content-Type: application/json" \
+      --data '{"package_id":"RA005","pricing":{"type":"cash"},"location":{"zip":"80202"}}'
+
+mcp_sandbox:
+  note: >-
+    The MCP server has no separate sandbox either. Interactive clients (Claude Code, Claude
+    Desktop, Codex, Cursor) sign in with a Turquoise account through the browser and the
+    server scopes calls to that user's organization, so a demo account explores the same
+    endpoint production callers use.
+  endpoint: https://consumer-mcp.turquoise.health/mcp
+
+see_also:
+- authentication/turquoise-health-authentication.yml
+- conventions/turquoise-health-conventions.yml

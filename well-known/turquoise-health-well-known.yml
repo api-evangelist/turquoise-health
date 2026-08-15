@@ -1,24 +1,68 @@
-generated: '2026-07-21'
+generated: '2026-08-14'
 method: searched
-host: https://turquoise.health
+source: live probes of turquoise.health, api.turquoise.health and consumer-mcp.turquoise.health
 note: >-
-  Probed the standard /.well-known/ discovery surface on the website host and the
-  api.turquoise.health host. No documents returned 200 (website paths 404; the API host
-  answers every path with HTTP 401 behind an auth gate). No catalog captured, so no
-  WellKnown/SecurityTxt pointer is wired.
-documents:
-- path: /.well-known/security.txt
-  status: 404
-- path: /.well-known/openid-configuration
-  status: 404
-- path: /.well-known/oauth-authorization-server
-  status: 404
-- path: /.well-known/api-catalog
-  status: 404
-- path: /.well-known/ai-plugin.json
-  status: 404
-api_host_documents:
+  Re-probed the /.well-known/ discovery surface across all three Turquoise Health hosts.
+  The marketing/docs host (turquoise.health) 404s every path. The REST API host
+  (api.turquoise.health) answers every path with HTTP 401 behind its bearer-token gate,
+  including /.well-known/*, so nothing is anonymously readable there. The MCP host
+  (consumer-mcp.turquoise.health) DOES serve two real, anonymous documents: RFC 8414
+  OAuth authorization-server metadata and RFC 9728 OAuth protected-resource metadata.
+  Those two 200s are the basis for the WellKnown pointer; no security.txt is served on
+  any host, so no SecurityTxt pointer is emitted.
+hosts:
+- host: https://consumer-mcp.turquoise.health
+  role: MCP server
+  documents:
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    spec: RFC 8414
+    file: turquoise-health-oauth-authorization-server.json
+  - path: /.well-known/oauth-protected-resource/mcp
+    status: 200
+    spec: RFC 9728
+    file: turquoise-health-oauth-protected-resource.json
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/security.txt
+    status: 404
+- host: https://turquoise.health
+  role: website and API documentation
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
 - host: https://api.turquoise.health
-  path: /.well-known/security.txt
-  status: 401
-  note: auth-gated; all paths return 401 JSON
+  role: REST API (Consumer Pricing v3)
+  note: >-
+    Every path, including the /.well-known/ namespace, returns HTTP 401 with the body
+    {"detail":"Authentication failed: Missing header. Please provide 'Authorization'
+    header"}. Auth-gated, not absent.
+  documents:
+  - path: /.well-known/oauth-authorization-server
+    status: 401
+  - path: /.well-known/oauth-protected-resource
+    status: 401
+  - path: /.well-known/agent-card.json
+    status: 401
+  - path: /.well-known/security.txt
+    status: 401

@@ -1,0 +1,66 @@
+generated: '2026-08-14'
+method: searched
+probe: true
+url: https://app.vanta.com/turquoise.health/trust/4eadhio8ef1h3zwumb77kp
+platform: Vanta
+note: >-
+  probe-security-programs.py returned trust=none because it only checks trust.<domain>,
+  security.<domain> and <domain>/trust|/security|/compliance — all of which 404 here.
+  Turquoise's trust center is hosted off-domain on Vanta, and the canonical link to it is
+  buried in the HIPAA compliance section of the Personalized Estimates developer doc rather
+  than in the site footer. Found by reading that doc.
+
+x-evidence:
+- fetched: '2026-08-14'
+  url: https://app.vanta.com/turquoise.health/trust/4eadhio8ef1h3zwumb77kp
+  http_status: 200
+  content_type: text/html
+  note: >-
+    Live and reachable, but a client-rendered single-page app — the certification list is
+    not present in the served HTML, so the certifications below are sourced from Turquoise's
+    own pages rather than scraped from the trust center itself.
+- fetched: '2026-08-14'
+  url: https://turquoise.health/api/docs/personalized-estimates.md
+  http_status: 200
+  quote: >-
+    "See our Trust Center for our current security certifications and compliance
+    documentation."
+- fetched: '2026-08-14'
+  url: https://turquoise.health/
+  http_status: 200
+  keywords: [SOC 2 Type II]
+- fetched: '2026-08-14'
+  url: https://turquoise.health/plans/providers
+  http_status: 200
+  keywords: [SOC 2 Type II, HIPAA]
+- fetched: '2026-08-14'
+  url: https://turquoise.health/platform
+  http_status: 200
+  keywords: [SOC 2 Type II, HIPAA]
+
+certifications:
+- name: SOC 2 Type II
+  source: https://turquoise.health/plans/providers
+- name: HIPAA
+  source: https://turquoise.health/api/docs/personalized-estimates.md
+
+safeguards:
+- Traffic to PHI-bearing endpoints routed to isolated environments subject to HIPAA
+  administrative, physical and technical safeguards.
+- PHI encrypted in transit and at rest.
+- Access to PHI logged for audit purposes.
+- Production PHI access requires a signed Business Associate Agreement (BAA).
+- Demo environment does not accept live patient data; no PHI may be exchanged in it.
+
+enterprise_controls:
+- SSO (enterprise plans)
+- Granular permission controls
+- Audit logging
+source_enterprise_controls: plans/turquoise-health-plans-pricing.yml
+
+gaps:
+- No /.well-known/security.txt on any host (RFC 9116).
+- No published vulnerability disclosure policy, responsible-disclosure page or bug bounty
+  program found; probe-security-programs.py returned vdp=none.
+- The trust center is not linked from the site footer or the docs navigation, only from
+  inside one developer doc.

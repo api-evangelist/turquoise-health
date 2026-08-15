@@ -1,0 +1,119 @@
+generated: '2026-08-14'
+method: searched
+status: published
+source: https://turquoise.health/api/docs/mcp-reference.md
+docs: https://turquoise.health/api/docs/mcp-reference/
+llms_txt: https://turquoise.health/api/docs/llms.txt
+
+server:
+  name: Turquoise Consumer Pricing MCP
+  vendor: Turquoise Health
+  transport: streamable-http
+  url: https://consumer-mcp.turquoise.health/mcp
+  maturity: Public Preview
+
+deployment:
+  mode: remote
+  endpoint: https://consumer-mcp.turquoise.health/mcp
+  auth: oauth
+  verified: probed
+  note: >-
+    Turquoise ships a HOSTED server only — there is no npx/pip package to install, so an
+    agent can reach it directly over the network. Probed 2026-08-14: POST tools/list
+    returned HTTP 401 {"error":"invalid_token","error_description":"Authentication
+    required"}, which confirms a live MCP endpoint behind an OAuth gate. The anonymous
+    RFC 9728 protected-resource document at
+    /.well-known/oauth-protected-resource/mcp names this exact resource URL.
+
+authorization:
+  flow: oauth2 client_credentials
+  token_endpoint: https://api.turquoise.health/oauth/token
+  required_scope: read:mcp
+  additional_scope: read:eligibility
+  additional_scope_note: >-
+    estimate_out_of_pocket runs a consented member eligibility check; it additionally
+    requires read:eligibility and, for real patient data, production access under a
+    signed BAA.
+  interactive_alternative: >-
+    Interactive clients (Claude Code, Claude Desktop, Codex, Cursor) can sign in through
+    the browser with a Turquoise account instead of managing a token; the server then
+    scopes calls to that user's organization.
+  metadata:
+    authorization_server: https://consumer-mcp.turquoise.health/.well-known/oauth-authorization-server
+    protected_resource: https://consumer-mcp.turquoise.health/.well-known/oauth-protected-resource/mcp
+    registration_endpoint: https://consumer-mcp.turquoise.health/register
+    code_challenge_methods: [S256]
+
+tools_schema_status: gated
+tools_schema_note: >-
+  The live tools/list manifest (and therefore each tool's real inputSchema) requires an
+  authenticated call. The tool names and descriptions below are taken verbatim from the
+  provider's published MCP reference and llms.txt, not from introspection. Input schemas
+  need authenticated introspection to capture.
+
+tools:
+- name: find_entity
+  description: >-
+    Find services, providers, insurance plans, or payers by name, by exact ID, or by how
+    they relate to each other.
+  rest_endpoints:
+  - GET /v3/packages
+  - GET /v3/providers
+  - GET /v3/networks
+  - GET /v3/payers
+- name: compare_prices
+  description: >-
+    Review price ranges and ranked provider lists for a service in your area. Optionally,
+    compare prices across plans.
+  rest_endpoints:
+  - POST /v3/prices/compare
+  - POST /v3/prices/query
+- name: provider_cost_detail
+  description: >-
+    Surface one provider's price for a service, the components expected to be billed with
+    it, and how it compares locally.
+  rest_endpoints:
+  - POST /v3/prices/query
+  - GET /v3/prices/{price_id}?expand=line_items
+  - POST /v3/prices/compare
+- name: explain_pricing
+  description: >-
+    Contextualize any of our prices or packages to understand how they were derived and
+    how to interpret them.
+  rest_endpoints: []
+  note: Static methodology content; makes no upstream REST call.
+- name: estimate_out_of_pocket
+  description: >-
+    Estimate what a member will personally owe, using their real benefits retrieved
+    through a consented eligibility check.
+  rest_endpoints:
+  - POST /v3/personalized-estimates
+  requires_scope: read:eligibility
+  requires_baa: true
+
+design_note: >-
+  The tools are workflow-shaped rather than one-per-endpoint: each one resolves
+  plain-language names and composes several v3 REST calls server-side. Provider states
+  callers who want to orchestrate that themselves can use the listed REST endpoints
+  directly.
+
+responses:
+- status: 200
+  meaning: Auth OK. Token is valid and has correct scope.
+- status: 401
+  meaning: Missing, expired, or wrong-audience token.
+- status: 403
+  meaning: Token is valid but not granted correct scope.
+
+x-evidence:
+- fetched: '2026-08-14'
+  url: https://consumer-mcp.turquoise.health/mcp
+  method: POST tools/list
+  http_status: 401
+  body: '{"error": "invalid_token", "error_description": "Authentication required"}'
+- fetched: '2026-08-14'
+  url: https://consumer-mcp.turquoise.health/.well-known/oauth-protected-resource/mcp
+  http_status: 200
+- fetched: '2026-08-14'
+  url: https://turquoise.health/api/docs/llms.txt
+  http_status: 200

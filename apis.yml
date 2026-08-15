@@ -1,28 +1,33 @@
 aid: turquoise-health
 name: Turquoise Health
-description: Turquoise Health is a healthcare price transparency platform that provides REST APIs for
-  accessing hospital and insurer negotiated rates, out-of-pocket cost estimates, and machine-readable
-  files (MRF) data. The platform enables precision pricing and intelligent contracting for finance teams
-  across healthcare, covering providers, payers, and life sciences organizations. Turquoise Health also
-  offers the Turquoise Connector MCP server for AI-tool integration with healthcare pricing data, Standard
-  Service Packages (SSP) APIs, and open-source toolkits for FHIR financial transaction standards.
+description: Turquoise Health is a healthcare price transparency platform. Its public developer surface
+  is the Consumer Pricing API — a documented OpenAPI 3.1.0 REST API at api.turquoise.health covering
+  providers, payers, networks, Standard Service Packages, and cash and insurer-negotiated rates for
+  shoppable services, plus personalized out-of-pocket estimates computed by layering a member's live
+  X12 270/271 eligibility and accumulators onto a negotiated rate. The same OAuth 2.0 client-credentials
+  token also authenticates a hosted Model Context Protocol server at consumer-mcp.turquoise.health,
+  which exposes five workflow-shaped pricing tools to AI agents. Turquoise also sells platform tiers for
+  market intelligence, contract intelligence and precision contracting to providers, payers and life
+  sciences organizations, generates CMS-compliant machine-readable files, and publishes free public
+  tools including the Medicare Pricer, payer transparency scores and a hospital transparency tracker.
 type: Index
 accessModel:
   pricing: unknown
-  onboarding: unknown
-  trial: false
-  try_now: false
-  public: false
-  label: Unknown
-  confidence: low
+  onboarding: self-serve
+  trial: true
+  try_now: true
+  public: true
+  label: Free demo account, sales-gated production
+  confidence: high
   source:
-  - plans
-  generated: '2026-07-22'
-  method: derived
+  - https://turquoise.health/signup/?signupContext=api
+  - https://turquoise.health/api/docs/start-building.md
+  generated: '2026-08-14'
+  method: searched
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/turquoise-health.png
 url: https://raw.githubusercontent.com/api-evangelist/turquoise-health/refs/heads/main/apis.yml
 created: '2026-06-13'
-modified: '2026-06-13'
+modified: '2026-08-14'
 specificationVersion: '0.19'
 tags:
 - Healthcare
@@ -35,107 +40,172 @@ tags:
 - Negotiated Rates
 - Out-of-Pocket Costs
 - MRF
+- Consumer Pricing
+- Model Context Protocol
+- Eligibility
+- Standard Service Packages
+- HIPAA
 apis:
-- name: Turquoise Health REST API
-  description: REST API providing access to healthcare pricing data including hospital negotiated rates,
-    payer contracted rates, out-of-pocket cost estimates, and machine-readable file (MRF) data. Supports
-    the Turquoise Knowledge Graph linking rates, contracts, and policies as standardized data objects.
+- name: Turquoise Consumer Pricing API
+  description: REST API providing consumer-friendly healthcare price estimates — cash and
+    insurer-negotiated rates — for shoppable services, addressed by Standard Service Package rather than
+    raw billing code so every provider is priced on the same definition of a service. Fifteen operations
+    across providers, payers, networks, packages, prices and personalized estimates. The
+    personalized-estimates endpoints run a consented X12 270/271 eligibility check and return a member's
+    actual cost share broken into deductible, copayment and coinsurance, alongside their current
+    accumulator state. OpenAPI 3.1.0 published publicly and unauthenticated; all endpoints require an
+    OAuth 2.0 client-credentials bearer token.
   image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://turquoise.health/api/redoc
-  baseURL: https://turquoise.health/api
+  humanURL: https://turquoise.health/api/docs/
+  baseURL: https://api.turquoise.health
   tags:
   - Healthcare Pricing
   - Negotiated Rates
-  - Hospital Rates
-  - Payer Rates
+  - Consumer Pricing
+  - Out-of-Pocket Costs
+  - Eligibility
   properties:
+  - type: OpenAPI
+    url: openapi/turquoise-health-consumer-pricing-openapi.yml
+  - type: OpenAPI
+    name: Original harvested specification
+    url: openapi/_original/turquoise-health-consumer-pricing-openapi-original.json
+  - type: Overlay
+    url: overlays/turquoise-health-consumer-pricing-overlay.yaml
   - type: Documentation
-    url: https://turquoise.health/api/redoc
+    url: https://turquoise.health/api/docs/
+  - type: APIReference
+    url: https://turquoise.health/api/docs/api-reference/
+  - type: GettingStarted
+    url: https://turquoise.health/api/docs/start-building/
   contact:
   - FN: Turquoise Health
     email: info@turquoise.health
 - name: Turquoise Connector (MCP)
-  description: An MCP (Model Context Protocol) server that connects AI tools to Turquoise Health's healthcare
-    pricing data, enabling developers to query pricing information across multiple care settings and organizations
-    directly from AI assistants and coding environments.
+  description: Hosted Model Context Protocol server exposing Turquoise's consumer pricing to AI agents
+    over streamable HTTP. Five workflow-shaped tools — find_entity, compare_prices,
+    provider_cost_detail, explain_pricing and estimate_out_of_pocket — each resolving plain-language
+    names and composing several Consumer Pricing v3 REST calls server-side. Authenticated with the same
+    OAuth 2.0 client-credentials token as the REST API, carrying the read:mcp scope; interactive clients
+    such as Claude Code, Claude Desktop, Codex and Cursor can instead sign in through the browser.
+    Currently in Public Preview.
   image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://turquoise.health/resources/blog/
-  baseURL: https://turquoise.health
+  humanURL: https://turquoise.health/api/docs/mcp-reference/
+  baseURL: https://consumer-mcp.turquoise.health
   tags:
   - MCP
   - AI Integration
   - Healthcare Pricing
-  - Developer Tools
+  - Agent Tools
   properties:
+  - type: MCPServer
+    url: mcp/turquoise-health-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/turquoise-health-tool-crosswalk.yml
   - type: Documentation
-    url: https://turquoise.health/resources/blog/
+    url: https://turquoise.health/api/docs/mcp-reference/
   contact:
   - FN: Turquoise Health
     email: info@turquoise.health
-- name: Standard Service Packages (SSP) API
-  description: Free API providing access to Turquoise Health's library of Standard Service Packages (SSPs),
-    which gather all medical services, materials, and fees associated with a healthcare procedure and
-    represent them as a single standardized code.
+- name: Standard Service Packages (SSP)
+  description: Turquoise's open library of Standard Service Packages, which gather all medical services,
+    materials and fees associated with a healthcare procedure and represent them as a single
+    standardized code. SSPs are the addressing scheme for the entire Consumer Pricing API and are served
+    through its package operations — GET /v3/packages, GET /v3/packages/{package_id} and GET
+    /v3/packages/{package_id}/line_items, where line items carry a fee type and a probabilistic
+    association rate. Turquoise publishes no separate standalone SSP API host.
   image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   humanURL: https://turquoise.health/products/ssps
-  baseURL: https://turquoise.health
+  baseURL: https://api.turquoise.health
   tags:
   - Standard Service Packages
   - Healthcare Codes
   - Procedure Pricing
-  - Free API
   properties:
   - type: Documentation
     url: https://turquoise.health/products/ssps
+  - type: Methodology
+    url: https://turquoise.health/api/docs/pricing-methodology/
   contact:
   - FN: Turquoise Health
     email: info@turquoise.health
-- name: Turquoise Health API
-  description: Authenticated API surface behind api.turquoise.health (returns HTTP 401 without credentials;
-    no public OpenAPI or developer documentation is published). Exposes Turquoise Health price transparency
-    and rate data to partners under contract.
-  humanURL: https://turquoise.health/platform
-  baseURL: https://api.turquoise.health
-  properties: []
 common:
-- type: DomainSecurity
-  url: security/turquoise-health-domain-security.yml
 - type: Website
   url: https://turquoise.health/
+- type: DeveloperPortal
+  url: https://turquoise.health/api/docs/
 - type: Documentation
-  url: https://turquoise.health/api/redoc
-- type: GitHubOrg
+  url: https://turquoise.health/api/docs/
+- type: APIReference
+  url: https://turquoise.health/api/docs/api-reference/
+- type: GettingStarted
+  url: https://turquoise.health/api/docs/start-building/
+- type: Blog
+  url: https://turquoise.health/resources/blog/
+- type: GitHubOrganization
   url: https://github.com/turquoisehealth
 - type: LinkedIn
   url: https://www.linkedin.com/company/turquoise-health/
 - type: X
   url: https://twitter.com/TurquoiseHC
-- type: Blog
-  url: https://turquoise.health/resources/blog/
 - type: Pricing
   url: https://turquoise.health/plans/providers
+- type: SignUp
+  url: https://turquoise.health/signup/?signupContext=api
+- type: TermsOfService
+  url: https://turquoise.health/legal/terms-of-service
+- type: PrivacyPolicy
+  url: https://turquoise.health/legal/privacy-policy
+- type: LLMsTxt
+  url: llms/turquoise-health-llms.txt
+- type: MCPServer
+  url: mcp/turquoise-health-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/turquoise-health-tool-crosswalk.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Authentication
+  url: authentication/turquoise-health-authentication.yml
+- type: OAuthScopes
+  url: scopes/turquoise-health-scopes.yml
+- type: Conventions
+  url: conventions/turquoise-health-conventions.yml
+- type: ErrorCatalog
+  url: errors/turquoise-health-problem-types.yml
+- type: Lifecycle
+  url: lifecycle/turquoise-health-lifecycle.yml
+- type: Conformance
+  url: conformance/turquoise-health-conformance.yml
+- type: Compliance
+  url: https://app.vanta.com/turquoise.health/trust/4eadhio8ef1h3zwumb77kp
+- type: TrustCenter
+  url: security/turquoise-health-trust-center.yml
+- type: DataModel
+  url: data-model/turquoise-health-data-model.yml
+- type: Sandbox
+  url: sandbox/turquoise-health-sandbox.yml
+- type: Overlay
+  url: overlays/turquoise-health-consumer-pricing-overlay.yaml
+- type: WellKnown
+  url: well-known/turquoise-health-well-known.yml
+- type: AgenticAccess
+  url: agentic-access/turquoise-health-agentic-access.yml
+- type: DomainSecurity
+  url: security/turquoise-health-domain-security.yml
+- type: Packages
+  url: packages/turquoise-health-packages.yml
 - type: Plans
   url: plans/turquoise-health-plans-pricing.yml
 - type: RateLimits
   url: rate-limits/turquoise-health-rate-limits.yml
 - type: FinOps
   url: finops/turquoise-health-finops.yml
-- type: DomainSecurity
-  url: security/turquoise-health-domain-security.yml
-- type: Website
-  url: https://turquoise.health
-- type: Blog
-  url: https://turquoise.health/resources/blog
-- type: SignUp
-  url: https://turquoise.health/request-a-demo
-- type: GitHubOrganization
-  url: https://github.com/turquoisehealth
-- type: Packages
-  url: packages/turquoise-health-packages.yml
-- type: DomainSecurity
-  url: security/turquoise-health-domain-security.yml
-- type: Packages
-  url: packages/turquoise-health-packages.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
+x-enrichment:
+  date: '2026-08-14'
+  status: enriched
+  artifacts_added: 22
+  pass: local-v1
+

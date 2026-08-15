@@ -1,0 +1,25 @@
+# Turquoise Consumer Pricing API
+
+> Consumer-friendly healthcare price estimates (cash and insurer-negotiated rates) for shoppable services. Available as a REST API and as an MCP server for AI agents.
+
+## Docs
+- [Introduction](https://turquoise.health/api/docs.md)
+- [Data Coverage](https://turquoise.health/api/docs/data-coverage.md)
+- [Pricing Methodology](https://turquoise.health/api/docs/pricing-methodology.md)
+- [Personalized Estimates](https://turquoise.health/api/docs/personalized-estimates.md)
+- [Start Building](https://turquoise.health/api/docs/start-building.md)
+- [API Reference](https://turquoise.health/api/docs/api-reference.md)
+- [MCP Reference](https://turquoise.health/api/docs/mcp-reference.md)
+
+## API
+- [OpenAPI schema](https://turquoise.health/api/docs/openapi.json)
+
+## MCP (for AI agents)
+- Endpoint: https://consumer-mcp.turquoise.health/mcp
+- Transport: streamable HTTP; auth via OAuth 2.0 client-credentials bearer token (scope read:mcp)
+- Interactive clients (Claude Code, Claude Desktop) can instead sign in through the browser with a Turquoise account; the server then scopes calls to that user's organization
+- Tools: find_entity, compare_prices, provider_cost_detail, estimate_out_of_pocket, explain_pricing
+- estimate_out_of_pocket runs a consented member eligibility check; it additionally requires the read:eligibility scope and, for real patient data, production access under a signed BAA
+
+## Optional
+- [Full docs as Markdown](https://turquoise.health/api/docs/llms-full.txt)

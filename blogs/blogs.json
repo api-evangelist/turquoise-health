@@ -13,10 +13,16 @@
       "feed_url": "https://twitter.com/TurquoiseHC",
       "title": "",
       "saved": 0,
-      "method": "none",
-      "error": "parse_failed"
+      "method": "none"
+    },
+    {
+      "source": "https://turquoise.health/api/docs/start-building/",
+      "feed_url": "https://turquoise.health/api/docs/start-building/",
+      "title": "",
+      "saved": 0,
+      "method": "none"
     }
   ],
-  "fetched": "2026-08-15T12:11:08Z",
-  "post_count": 53
+  "fetched": "2026-08-22T20:20:02Z",
+  "post_count": 55
 }

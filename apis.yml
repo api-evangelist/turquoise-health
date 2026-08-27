@@ -62,49 +62,14 @@ tags_raw:
 - Standard Service Packages
 - HIPAA
 apis:
-- name: Turquoise Consumer Pricing API
-  description: REST API providing consumer-friendly healthcare price estimates — cash and
-    insurer-negotiated rates — for shoppable services, addressed by Standard Service Package rather than
-    raw billing code so every provider is priced on the same definition of a service. Fifteen operations
-    across providers, payers, networks, packages, prices and personalized estimates. The
-    personalized-estimates endpoints run a consented X12 270/271 eligibility check and return a member's
-    actual cost share broken into deductible, copayment and coinsurance, alongside their current
-    accumulator state. OpenAPI 3.1.0 published publicly and unauthenticated; all endpoints require an
-    OAuth 2.0 client-credentials bearer token.
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
-  humanURL: https://turquoise.health/api/docs/
-  baseURL: https://api.turquoise.health
-  tags:
-  - Healthcare Pricing
-  - Negotiated Rates
-  - Consumer Pricing
-  - Out-of-Pocket Costs
-  - Eligibility
-  properties:
-  - type: OpenAPI
-    url: openapi/turquoise-health-consumer-pricing-openapi.yml
-  - type: OpenAPI
-    name: Original harvested specification
-    url: openapi/_original/turquoise-health-consumer-pricing-openapi-original.json
-  - type: Overlay
-    url: overlays/turquoise-health-consumer-pricing-overlay.yaml
-  - type: Documentation
-    url: https://turquoise.health/api/docs/
-  - type: APIReference
-    url: https://turquoise.health/api/docs/api-reference/
-  - type: GettingStarted
-    url: https://turquoise.health/api/docs/start-building/
-  contact:
-  - FN: Turquoise Health
-    email: info@turquoise.health
 - name: Turquoise Connector (MCP)
-  description: Hosted Model Context Protocol server exposing Turquoise's consumer pricing to AI agents
-    over streamable HTTP. Five workflow-shaped tools — find_entity, compare_prices,
-    provider_cost_detail, explain_pricing and estimate_out_of_pocket — each resolving plain-language
-    names and composing several Consumer Pricing v3 REST calls server-side. Authenticated with the same
-    OAuth 2.0 client-credentials token as the REST API, carrying the read:mcp scope; interactive clients
-    such as Claude Code, Claude Desktop, Codex and Cursor can instead sign in through the browser.
-    Currently in Public Preview.
+  description: >-
+    Hosted Model Context Protocol server exposing Turquoise's consumer pricing to AI agents over streamable
+    HTTP. Five workflow-shaped tools — find_entity, compare_prices, provider_cost_detail, explain_pricing
+    and estimate_out_of_pocket — each resolving plain-language names and composing several Consumer Pricing
+    v3 REST calls server-side. Authenticated with the same OAuth 2.0 client-credentials token as the REST
+    API, carrying the read:mcp scope; interactive clients such as Claude Code, Claude Desktop, Codex and
+    Cursor can instead sign in through the browser. Currently in Public Preview.
   image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   humanURL: https://turquoise.health/api/docs/mcp-reference/
   baseURL: https://consumer-mcp.turquoise.health
@@ -124,12 +89,13 @@ apis:
   - FN: Turquoise Health
     email: info@turquoise.health
 - name: Standard Service Packages (SSP)
-  description: Turquoise's open library of Standard Service Packages, which gather all medical services,
-    materials and fees associated with a healthcare procedure and represent them as a single
-    standardized code. SSPs are the addressing scheme for the entire Consumer Pricing API and are served
-    through its package operations — GET /v3/packages, GET /v3/packages/{package_id} and GET
-    /v3/packages/{package_id}/line_items, where line items carry a fee type and a probabilistic
-    association rate. Turquoise publishes no separate standalone SSP API host.
+  description: >-
+    Turquoise's open library of Standard Service Packages, which gather all medical services, materials
+    and fees associated with a healthcare procedure and represent them as a single standardized code.
+    SSPs are the addressing scheme for the entire Consumer Pricing API and are served through its package
+    operations — GET /v3/packages, GET /v3/packages/{package_id} and GET /v3/packages/{package_id}/line_items,
+    where line items carry a fee type and a probabilistic association rate. Turquoise publishes no separate
+    standalone SSP API host.
   image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   humanURL: https://turquoise.health/products/ssps
   baseURL: https://api.turquoise.health
@@ -145,6 +111,22 @@ apis:
   contact:
   - FN: Turquoise Health
     email: info@turquoise.health
+- aid: turquoise-health:turquoise-health-consumer-pricing-api
+  name: Turquoise Health Consumer Pricing API
+  description: The Consumer Pricing API from Turquoise Health — 15 operation(s) for consumer pricing.
+  humanURL: https://turquoise.health/api/docs/
+  baseURL: https://api.turquoise.health
+  tags:
+  - Consumer Pricing
+  properties:
+  - type: OpenAPI
+    url: openapi/turquoise-health-consumer-pricing-api-openapi.yml
+  - type: Documentation
+    url: https://turquoise.health/api/docs/
+  - type: APIReference
+    url: https://turquoise.health/api/docs/api-reference/
+  - type: GettingStarted
+    url: https://turquoise.health/api/docs/start-building/
 common:
 - type: Website
   url: https://turquoise.health/

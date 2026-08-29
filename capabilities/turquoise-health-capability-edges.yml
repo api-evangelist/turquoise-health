@@ -1,0 +1,25 @@
+slug: turquoise-health
+provider: Turquoise Health
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Healthcare Providers
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 1
+edges:
+- tag: Consumer Pricing
+  spec_file: turquoise-health-consumer-pricing-api-openapi.yml
+  capability_id: BC-2800.40
+  capability_id_l1: BC-2800
+  capability_name: Financial Counselling & Estimation
+  confidence: 0.7
+  evidence: POST /v3/prices/compare  v3_compare_prices  Get Price Statistics ... schema ConsumerSiteModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate
+  reason: Provider/payer/network catalogues plus negotiated and cash rates feeding a personalized out-of-pocket
+    estimate is patient-facing price estimation (BC-2800.40); an alternate reading as payer contract modelling
+    (BC-2870.70) exists, so confidence is moderate.

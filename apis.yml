@@ -140,6 +140,9 @@ apis:
   - type: GettingStarted
     url: https://turquoise.health/api/docs/start-building/
 common:
+- type: CapabilityMap
+  url: capabilities/turquoise-health-capability-edges.yml
+  name: Turquoise Health Business Capability Map
 - type: Website
   url: https://turquoise.health/
 - type: DeveloperPortal

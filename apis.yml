@@ -11,6 +11,18 @@ description: Turquoise Health is a healthcare price transparency platform. Its p
   sciences organizations, generates CMS-compliant machine-readable files, and publishes free public
   tools including the Medicare Pricer, payer transparency scores and a hospital transparency tracker.
 type: Index
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: unknown
   onboarding: self-serve

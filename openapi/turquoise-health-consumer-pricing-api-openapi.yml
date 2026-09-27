@@ -1877,307 +1877,6 @@ paths:
                   field: null
 components:
   schemas:
-    ConsumerSiteEntityRef:
-      description: 'Two-field reference stub. `expand=` swaps it for the full entity.  `name` is nullable by design: 0.8% of priced providers have no reference row (measured 07/2026), and the v3 rule is to emit the stub with a null name rather than silently dropping the priced row.'
-      properties:
-        id:
-          description: Entity identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term.
-          title: Id
-          type: string
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          default: null
-          title: Name
-      required:
-      - id
-      title: EntityRef
-      type: object
-    ProviderAddress:
-      properties:
-        city:
-          type: string
-          title: City
-          description: City the provider is located in.
-        state:
-          type: string
-          title: State
-          description: Two-letter USPS state code.
-        zip_code:
-          type: string
-          title: Zip Code
-          description: Provider ZIP code.
-        latitude:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Latitude
-          description: Provider HQ latitude; null for ~6% of providers.
-        longitude:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Longitude
-          description: Provider HQ longitude; null for ~6% of providers.
-      type: object
-      required:
-      - city
-      - state
-      - zip_code
-      title: ProviderAddress
-    Money:
-      properties:
-        amount:
-          type: string
-          title: Amount
-          description: String-decimal value, e.g. "1250.00".
-        minor_units:
-          type: integer
-          title: Minor Units
-          description: Integer minor units, e.g. 125000.
-        currency:
-          type: string
-          title: Currency
-          description: ISO currency code. Always USD today.
-          default: USD
-      type: object
-      required:
-      - amount
-      - minor_units
-      title: Money
-      description: The single money shape used everywhere a monetary value appears.
-    ConsumerSiteModulesConsumerPricingV3DtosCommonPageMeta:
-      description: ModulesConsumerPricingV3DtosCommonPageMeta
-      properties:
-        size:
-          description: Number of items in this page.
-          title: Size
-          type: integer
-        total:
-          description: Count of the full filtered set, not just this page.
-          title: Total
-          type: integer
-        next_cursor:
-          anyOf:
-          - type: string
-          - type: 'null'
-          default: null
-          title: Next Cursor
-      required:
-      - size
-      - total
-      title: ModulesConsumerPricingV3DtosCommonPageMeta
-      type: object
-    BillingCode:
-      properties:
-        code:
-          type: string
-          title: Code
-          description: Billing code.
-          examples:
-          - '59510'
-        code_type:
-          type: string
-          title: Code Type
-          description: Billing code type.
-          examples:
-          - HCPCS
-      type: object
-      required:
-      - code
-      - code_type
-      title: BillingCode
-      description: 'A billing code and its coding system. Shared vocabulary primitive —
-
-        used wherever a resource surfaces a structured code (e.g.
-
-        Package.anchor_codes); semantics belong to the field that carries it.'
-    ConsumerSiteMemberCostShare:
-      description: MemberCostShare
-      properties:
-        total:
-          allOf:
-          - $ref: '#/components/schemas/ConsumerSiteMoney'
-          description: Total out-of-pocket price.
-        amount_towards_deductible:
-          $ref: '#/components/schemas/ConsumerSiteMoney'
-        amount_towards_copayment:
-          $ref: '#/components/schemas/ConsumerSiteMoney'
-        amount_towards_coinsurance:
-          $ref: '#/components/schemas/ConsumerSiteMoney'
-        is_deductible_met:
-          description: Whether the deductible is fully met at/after this service.
-          title: Is Deductible Met
-          type: boolean
-        is_out_of_pocket_max_met:
-          description: Whether the OOP maximum is met at/after this service.
-          title: Is Out Of Pocket Max Met
-          type: boolean
-      required:
-      - total
-      - amount_towards_deductible
-      - amount_towards_copayment
-      - amount_towards_coinsurance
-      - is_deductible_met
-      - is_out_of_pocket_max_met
-      title: MemberCostShare
-      type: object
-    PriceExpand:
-      type: string
-      enum:
-      - line_items
-      title: PriceExpand
-      description: Optional relations the price detail endpoint can inline via `expand`.
-    ConsumerSiteModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate:
-      description: ModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate
-      properties:
-        object:
-          anyOf:
-          - type: string
-          - type: 'null'
-          default: personalized_estimate
-          title: Object
-        provider:
-          $ref: '#/components/schemas/ConsumerSiteEntityRef'
-        package:
-          $ref: '#/components/schemas/ConsumerSiteEntityRef'
-        pricing:
-          $ref: '#/components/schemas/ConsumerSitePricingResolved'
-        total_allowed_amount:
-          allOf:
-          - $ref: '#/components/schemas/ConsumerSiteMoney'
-          description: Amount that insurance company + patient pay for the service.
-        member_cost_share:
-          $ref: '#/components/schemas/ConsumerSiteMemberCostShare'
-        sub_package_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          default: null
-          title: Sub Package Id
-        line_items:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/ConsumerSiteLineItem'
-            type: array
-          - type: 'null'
-          default: null
-          title: Line Items
-      required:
-      - provider
-      - package
-      - pricing
-      - total_allowed_amount
-      - member_cost_share
-      title: ModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate
-      type: object
-    ConsumerSitePersonalizedEstimateErrorCode:
-      description: 'Stable error codes returned by the v3 personalized-estimate endpoints.
-
-
-        Uppercase codes come from Consumer Pricing v3. Lowercase codes are specific to
-
-        personalized-estimate eligibility and authorization.'
-      enum:
-      - internal_server_error
-      - eligibility_service_error
-      - unsupported_tpa
-      - unavailable_payer
-      - invalid_dob
-      - invalid_member_id
-      - invalid_member_name
-      - member_not_found
-      - no_active_coverage
-      - plan_not_found
-      - pricing_unavailable
-      - invalid_json
-      - unauthorized
-      - forbidden
-      - authorization_unavailable
-      - invalid_request
-      - invalid_id_format
-      - insufficient_scope
-      - location_ambiguous
-      - unresolvable_location
-      - not_found
-      - invalid_expand
-      - permission_denied
-      - rate_limited
-      - search_unavailable
-      - conflicting_parameters
-      title: PersonalizedEstimateErrorCode
-      type: string
-    Network:
-      properties:
-        object:
-          type: string
-          const: network
-          title: Object
-          default: network
-        id:
-          type: string
-          title: Id
-          description: Network identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term.
-        name:
-          type: string
-          title: Name
-          description: Display name of the network.
-        payer:
-          $ref: '#/components/schemas/EntityRef'
-          description: The network's payer as an {id, name} stub; the full entity lives at /v3/payers/{id}.
-        context:
-          anyOf:
-          - $ref: '#/components/schemas/SearchContext'
-          - type: 'null'
-          description: Query-relative metadata (search only).
-      type: object
-      required:
-      - id
-      - name
-      - payer
-      title: Network
-      examples:
-      - id: '-3776001016975145508'
-        name: National OAP
-        object: network
-        payer:
-          id: '76'
-          name: Cigna
-    LocationWithin:
-      properties:
-        state:
-          anyOf:
-          - type: string
-            maxLength: 2
-            minLength: 2
-          - type: 'null'
-          title: State
-          description: Two-letter USPS state code.
-          examples:
-          - CO
-        cbsa:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Cbsa
-          description: CBSA name (case-insensitive substring match).
-          examples:
-          - Denver-Aurora-Centennial, CO
-        zip_codes:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Zip Codes
-          description: ZIP codes (exact match, any-of).
-          examples:
-          - - '80218'
-            - '80210'
-      type: object
-      title: LocationWithin
-      description: Region filter. Exactly one of state / cbsa / zip_codes.
     MatchContext:
       properties:
         score:
@@ -2197,26 +1896,36 @@ components:
       type: object
       title: MatchContext
       description: Query-relative metadata for resources with a concrete location.
-    ConsumerSitePriceSort:
-      description: Sort options for price listings. `distance` requires a near/zip location.
-      enum:
-      - total
-      - distance
-      title: PriceSort
-      type: string
-    SearchContext:
+    Payer:
       properties:
-        score:
+        object:
+          type: string
+          const: payer
+          title: Object
+          default: payer
+        id:
+          type: string
+          title: Id
+          description: Payer identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term.
+        name:
           anyOf:
-          - type: number
-            maximum: 1.0
-            minimum: 0.0
+          - type: string
           - type: 'null'
-          title: Score
-          description: Semantic similarity (0-1).
+          title: Name
+          description: Display name; null when reference data is missing.
+        context:
+          anyOf:
+          - $ref: '#/components/schemas/SearchContext'
+          - type: 'null'
+          description: Query-relative metadata (search only).
       type: object
-      title: SearchContext
-      description: Query-relative semantic-search metadata.
+      required:
+      - id
+      title: Payer
+      examples:
+      - id: '76'
+        name: Cigna
+        object: payer
     Package:
       properties:
         object:
@@ -2282,193 +1991,46 @@ components:
         name: Delivery - caesarean
         object: package
         type: ssp
-    ListEnvelope_Provider_:
+    ConsumerSiteNoDataReason:
+      description: NoDataReason
+      enum:
+      - no_data
+      - permission_denied
+      title: NoDataReason
+      type: string
+    PriceSort:
+      type: string
+      enum:
+      - total
+      - distance
+      title: PriceSort
+      description: Sort options for price listings. `distance` requires a near/zip location.
+    PricingCash:
       properties:
-        object:
+        type:
           type: string
-          const: list
-          title: Object
-          default: list
-        items:
-          items:
-            $ref: '#/components/schemas/Provider'
-          type: array
-          title: Items
-        page:
-          $ref: '#/components/schemas/PageMeta'
-        no_data_reason:
-          anyOf:
-          - $ref: '#/components/schemas/NoDataReason'
-          - type: 'null'
-          description: Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions.
-        disclosures:
-          items:
-            type: string
-          type: array
-          title: Disclosures
-          description: Human-readable caveats about what this result does and does not imply.
+          const: cash
+          title: Type
       type: object
       required:
-      - items
-      - page
-      title: ListEnvelope[Provider]
-    ResponseMeta:
-      properties:
-        dataset_version:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Dataset Version
-          description: Version marker of the underlying dataset; null until the loader exposes one.
-      type: object
-      title: ResponseMeta
-    ConsumerSiteBenefitCategory:
-      properties:
-        category:
-          title: Category
-          type: string
-        coinsurance:
-          title: Coinsurance
-          type: number
-        copayment:
-          title: Copayment
-          type: number
-        deductible:
-          anyOf:
-          - type: number
-          - type: 'null'
-          description: '`0` means deductible does not apply. `null` means plan deductible applies'
-          title: Deductible
-      required:
-      - category
-      - coinsurance
-      - copayment
-      - deductible
-      title: BenefitCategory
-      type: object
-    ListEnvelope_LineItem_:
-      properties:
-        object:
-          type: string
-          const: list
-          title: Object
-          default: list
-        items:
-          items:
-            $ref: '#/components/schemas/LineItem'
-          type: array
-          title: Items
-        page:
-          $ref: '#/components/schemas/PageMeta'
-        no_data_reason:
-          anyOf:
-          - $ref: '#/components/schemas/NoDataReason'
-          - type: 'null'
-          description: Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions.
-        disclosures:
-          items:
-            type: string
-          type: array
-          title: Disclosures
-          description: Human-readable caveats about what this result does and does not imply.
-      type: object
-      required:
-      - items
-      - page
-      title: ListEnvelope[LineItem]
-    ListEnvelope_Network_:
-      properties:
-        object:
-          type: string
-          const: list
-          title: Object
-          default: list
-        items:
-          items:
-            $ref: '#/components/schemas/Network'
-          type: array
-          title: Items
-        page:
-          $ref: '#/components/schemas/PageMeta'
-        no_data_reason:
-          anyOf:
-          - $ref: '#/components/schemas/NoDataReason'
-          - type: 'null'
-          description: Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions.
-        disclosures:
-          items:
-            type: string
-          type: array
-          title: Disclosures
-          description: Human-readable caveats about what this result does and does not imply.
-      type: object
-      required:
-      - items
-      - page
-      title: ListEnvelope[Network]
-    ConsumerSiteMemberEligibilityInput:
-      description: 'Shared eligibility fields carried by all cost-share input payloads.
-
-
-        Contains PHI (name/DOB/member id) — handle per HIPAA controls.'
-      properties:
-        first_name:
-          maxLength: 255
-          minLength: 1
-          title: First Name
-          type: string
-        last_name:
-          maxLength: 255
-          minLength: 1
-          title: Last Name
-          type: string
-        date_of_birth:
-          format: date
-          title: Date Of Birth
-          type: string
-        member_id:
-          maxLength: 255
-          minLength: 1
-          title: Member Id
-          type: string
-        consent_attested:
-          const: true
-          title: Consent Attested
-      required:
-      - first_name
-      - last_name
-      - date_of_birth
-      - member_id
-      - consent_attested
-      title: MemberEligibilityInput
-      type: object
-    LocationNear:
-      properties:
-        lat:
-          type: number
-          title: Lat
-          description: Latitude of the search anchor.
-          examples:
-          - 39.745961
-        lng:
-          type: number
-          title: Lng
-          description: Longitude of the search anchor.
-          examples:
-          - -104.971559
-        radius_m:
-          type: integer
-          minimum: 1.0
-          title: Radius M
-          description: Search radius in meters.
-          default: 25000
-          examples:
-          - 25000
-      type: object
-      required:
-      - lat
-      - lng
-      title: LocationNear
+      - type
+      title: PricingCash
+    ErrorCode:
+      type: string
+      enum:
+      - invalid_request
+      - invalid_id_format
+      - insufficient_scope
+      - location_ambiguous
+      - unresolvable_location
+      - not_found
+      - invalid_expand
+      - permission_denied
+      - rate_limited
+      - search_unavailable
+      - conflicting_parameters
+      title: ErrorCode
+      description: Stable error code registry for the v3 surface. Switch on this in code.
     ConsumerSitePriceComparison:
       description: PriceComparison
       properties:
@@ -2504,123 +2066,6 @@ components:
       - count
       title: PriceComparison
       type: object
-    ListEnvelope_Package_:
-      properties:
-        object:
-          type: string
-          const: list
-          title: Object
-          default: list
-        items:
-          items:
-            $ref: '#/components/schemas/Package'
-          type: array
-          title: Items
-        page:
-          $ref: '#/components/schemas/PageMeta'
-        no_data_reason:
-          anyOf:
-          - $ref: '#/components/schemas/NoDataReason'
-          - type: 'null'
-          description: Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions.
-        disclosures:
-          items:
-            type: string
-          type: array
-          title: Disclosures
-          description: Human-readable caveats about what this result does and does not imply.
-      type: object
-      required:
-      - items
-      - page
-      title: ListEnvelope[Package]
-    PageMeta:
-      properties:
-        size:
-          type: integer
-          title: Size
-          description: Number of items in this page.
-        total:
-          type: integer
-          title: Total
-          description: Count of the full filtered set, not just this page.
-        next_cursor:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Next Cursor
-          description: Opaque cursor for the next page; null when exhausted.
-      type: object
-      required:
-      - size
-      - total
-      title: PageMeta
-    ErrorCode:
-      type: string
-      enum:
-      - invalid_request
-      - invalid_id_format
-      - insufficient_scope
-      - location_ambiguous
-      - unresolvable_location
-      - not_found
-      - invalid_expand
-      - permission_denied
-      - rate_limited
-      - search_unavailable
-      - conflicting_parameters
-      title: ErrorCode
-      description: Stable error code registry for the v3 surface. Switch on this in code.
-    ConsumerSitePricingResolved:
-      description: The resolved payment arrangement on a price. Cash prices omit network/payer; negotiated prices carry both as reference stubs.
-      properties:
-        type:
-          title: Type
-          type: string
-        network:
-          anyOf:
-          - $ref: '#/components/schemas/ConsumerSiteEntityRef'
-          - type: 'null'
-          default: null
-        payer:
-          anyOf:
-          - $ref: '#/components/schemas/ConsumerSiteEntityRef'
-          - type: 'null'
-          default: null
-      required:
-      - type
-      title: PricingResolved
-      type: object
-    ListEnvelope_Payer_:
-      properties:
-        object:
-          type: string
-          const: list
-          title: Object
-          default: list
-        items:
-          items:
-            $ref: '#/components/schemas/Payer'
-          type: array
-          title: Items
-        page:
-          $ref: '#/components/schemas/PageMeta'
-        no_data_reason:
-          anyOf:
-          - $ref: '#/components/schemas/NoDataReason'
-          - type: 'null'
-          description: Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions.
-        disclosures:
-          items:
-            type: string
-          type: array
-          title: Disclosures
-          description: Human-readable caveats about what this result does and does not imply.
-      type: object
-      required:
-      - items
-      - page
-      title: ListEnvelope[Payer]
     ConsumerSiteLocationNear:
       description: LocationNear
       properties:
@@ -2649,6 +2094,441 @@ components:
       - lng
       title: LocationNear
       type: object
+    LineItem:
+      properties:
+        code:
+          type: string
+          title: Code
+          description: Billing code.
+        code_type:
+          type: string
+          title: Code Type
+          description: Billing code type.
+        fee_type:
+          type: string
+          title: Fee Type
+          description: 'Fee category: base_code, facility_fee, professional_fee, optional_fee.'
+        description:
+          type: string
+          title: Description
+          description: Human-readable line item description.
+        association_rate:
+          type: number
+          title: Association Rate
+          description: Likelihood this line item is part of the package (0-1).
+      type: object
+      required:
+      - code
+      - code_type
+      - fee_type
+      - description
+      - association_rate
+      title: LineItem
+      description: A component of a package's composition (from `api_ssp_contents`).
+      examples:
+      - association_rate: 0.4491
+        code: '786'
+        code_type: MS-DRG
+        description: CESAREAN SECTION WITHOUT STERILIZATION WITH MCC
+        fee_type: base_code
+    SearchContext:
+      properties:
+        score:
+          anyOf:
+          - type: number
+            maximum: 1.0
+            minimum: 0.0
+          - type: 'null'
+          title: Score
+          description: Semantic similarity (0-1).
+      type: object
+      title: SearchContext
+      description: Query-relative semantic-search metadata.
+    LocationWithin:
+      properties:
+        state:
+          anyOf:
+          - type: string
+            maxLength: 2
+            minLength: 2
+          - type: 'null'
+          title: State
+          description: Two-letter USPS state code.
+          examples:
+          - CO
+        cbsa:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Cbsa
+          description: CBSA name (case-insensitive substring match).
+          examples:
+          - Denver-Aurora-Centennial, CO
+        zip_codes:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Zip Codes
+          description: ZIP codes (exact match, any-of).
+          examples:
+          - - '80218'
+            - '80210'
+      type: object
+      title: LocationWithin
+      description: Region filter. Exactly one of state / cbsa / zip_codes.
+    ConsumerSiteMoney:
+      description: The single money shape used everywhere a monetary value appears.
+      properties:
+        amount:
+          description: String-decimal value, e.g. "1250.00".
+          title: Amount
+          type: string
+        minor_units:
+          description: Integer minor units, e.g. 125000.
+          title: Minor Units
+          type: integer
+        currency:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: USD
+          description: ISO currency code. Always USD today.
+          title: Currency
+      required:
+      - amount
+      - minor_units
+      title: Money
+      type: object
+    ListEnvelope_LineItem_:
+      properties:
+        object:
+          type: string
+          const: list
+          title: Object
+          default: list
+        items:
+          items:
+            $ref: '#/components/schemas/LineItem'
+          type: array
+          title: Items
+        page:
+          $ref: '#/components/schemas/PageMeta'
+        no_data_reason:
+          anyOf:
+          - $ref: '#/components/schemas/NoDataReason'
+          - type: 'null'
+          description: Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions.
+        disclosures:
+          items:
+            type: string
+          type: array
+          title: Disclosures
+          description: Human-readable caveats about what this result does and does not imply.
+      type: object
+      required:
+      - items
+      - page
+      title: ListEnvelope[LineItem]
+    PricingNegotiated:
+      properties:
+        type:
+          type: string
+          const: negotiated
+          title: Type
+        network_id:
+          type: string
+          title: Network Id
+          description: Network identifier (string-wrapped 64-bit integer).
+          examples:
+          - '-3776001016975145508'
+      type: object
+      required:
+      - type
+      - network_id
+      title: PricingNegotiated
+    ConsumerSiteComparisonStats:
+      description: ComparisonStats
+      properties:
+        min:
+          $ref: '#/components/schemas/ConsumerSiteMoney'
+        max:
+          $ref: '#/components/schemas/ConsumerSiteMoney'
+        avg:
+          $ref: '#/components/schemas/ConsumerSiteMoney'
+        median:
+          $ref: '#/components/schemas/ConsumerSiteMoney'
+        q1:
+          $ref: '#/components/schemas/ConsumerSiteMoney'
+        q3:
+          $ref: '#/components/schemas/ConsumerSiteMoney'
+      required:
+      - min
+      - max
+      - avg
+      - median
+      - q1
+      - q3
+      title: ComparisonStats
+      type: object
+    ComparisonStats:
+      properties:
+        min:
+          $ref: '#/components/schemas/Money'
+        max:
+          $ref: '#/components/schemas/Money'
+        avg:
+          $ref: '#/components/schemas/Money'
+        median:
+          $ref: '#/components/schemas/Money'
+        q1:
+          $ref: '#/components/schemas/Money'
+        q3:
+          $ref: '#/components/schemas/Money'
+      type: object
+      required:
+      - min
+      - max
+      - avg
+      - median
+      - q1
+      - q3
+      title: ComparisonStats
+    ConsumerSitePersonalizedEstimateErrorPayload:
+      description: Details about an error returned by a v3 personalized-estimate endpoint.
+      properties:
+        code:
+          allOf:
+          - $ref: '#/components/schemas/ConsumerSitePersonalizedEstimateErrorCode'
+          description: Stable, documented error code. Switch on this in code.
+        message:
+          description: Human-readable error summary, suitable for narration to an end user.
+          title: Message
+          type: string
+        hint:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          description: Actionable suggestion for the caller, when applicable.
+          title: Hint
+        expected:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          description: What the API expected (format, value range, etc).
+          title: Expected
+        received:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          description: What the API actually received.
+          title: Received
+        field:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          description: Dot-path of the offending request field, when applicable.
+          title: Field
+      required:
+      - code
+      - message
+      title: PersonalizedEstimateErrorPayload
+      type: object
+    EntityRef:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Entity identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term.
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: Display name; null when reference data is missing.
+      type: object
+      required:
+      - id
+      title: EntityRef
+      description: 'Two-field reference stub. `expand=` swaps it for the full entity.
+
+
+        `name` is nullable by design: 0.8% of priced providers have no reference
+
+        row (measured 07/2026), and the v3 rule is to emit the stub with a null
+
+        name rather than silently dropping the priced row.'
+    ConsumerSiteMemberCostShare:
+      description: MemberCostShare
+      properties:
+        total:
+          allOf:
+          - $ref: '#/components/schemas/ConsumerSiteMoney'
+          description: Total out-of-pocket price.
+        amount_towards_deductible:
+          $ref: '#/components/schemas/ConsumerSiteMoney'
+        amount_towards_copayment:
+          $ref: '#/components/schemas/ConsumerSiteMoney'
+        amount_towards_coinsurance:
+          $ref: '#/components/schemas/ConsumerSiteMoney'
+        is_deductible_met:
+          description: Whether the deductible is fully met at/after this service.
+          title: Is Deductible Met
+          type: boolean
+        is_out_of_pocket_max_met:
+          description: Whether the OOP maximum is met at/after this service.
+          title: Is Out Of Pocket Max Met
+          type: boolean
+      required:
+      - total
+      - amount_towards_deductible
+      - amount_towards_copayment
+      - amount_towards_coinsurance
+      - is_deductible_met
+      - is_out_of_pocket_max_met
+      title: MemberCostShare
+      type: object
+    ConsumerSitePricingResolved:
+      description: The resolved payment arrangement on a price. Cash prices omit network/payer; negotiated prices carry both as reference stubs.
+      properties:
+        type:
+          title: Type
+          type: string
+        network:
+          anyOf:
+          - $ref: '#/components/schemas/ConsumerSiteEntityRef'
+          - type: 'null'
+          default: null
+        payer:
+          anyOf:
+          - $ref: '#/components/schemas/ConsumerSiteEntityRef'
+          - type: 'null'
+          default: null
+      required:
+      - type
+      title: PricingResolved
+      type: object
+    ConsumerSiteLineItem:
+      description: A component of a package's composition (from `api_ssp_contents`).
+      properties:
+        code:
+          description: Billing code.
+          title: Code
+          type: string
+        code_type:
+          description: Billing code type.
+          title: Code Type
+          type: string
+        fee_type:
+          description: 'Fee category: base_code, facility_fee, professional_fee, optional_fee.'
+          title: Fee Type
+          type: string
+        description:
+          description: Human-readable line item description.
+          title: Description
+          type: string
+        association_rate:
+          anyOf:
+          - type: number
+          - type: integer
+          description: Likelihood this line item is part of the package (0-1).
+          title: Association Rate
+      required:
+      - code
+      - code_type
+      - fee_type
+      - description
+      - association_rate
+      title: LineItem
+      type: object
+    ConsumerSitePersonalizedEstimatesQueryRequest:
+      description: Inbound payload for the v3 list-prices endpoint.
+      properties:
+        package_id:
+          minLength: 1
+          title: Package Id
+          type: string
+        provider_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Provider Id
+        pricing:
+          $ref: '#/components/schemas/ConsumerSitePricingNegotiated'
+        member_eligibility:
+          $ref: '#/components/schemas/ConsumerSiteMemberEligibilityInput'
+        location:
+          anyOf:
+          - $ref: '#/components/schemas/ConsumerSiteLocation'
+          - type: 'null'
+          default: null
+        sort:
+          anyOf:
+          - $ref: '#/components/schemas/ConsumerSitePriceSort'
+          - type: 'null'
+          default: null
+        sort_direction:
+          default: asc
+          enum:
+          - asc
+          - desc
+          title: Sort Direction
+          type: string
+        page_size:
+          default: 25
+          maximum: 250
+          minimum: 1
+          title: Page Size
+          type: integer
+        cursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Cursor
+      required:
+      - package_id
+      - pricing
+      - member_eligibility
+      title: PersonalizedEstimatesQueryRequest
+      type: object
+    ResponseMeta:
+      properties:
+        dataset_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dataset Version
+          description: Version marker of the underlying dataset; null until the loader exposes one.
+      type: object
+      title: ResponseMeta
+    Money:
+      properties:
+        amount:
+          type: string
+          title: Amount
+          description: String-decimal value, e.g. "1250.00".
+        minor_units:
+          type: integer
+          title: Minor Units
+          description: Integer minor units, e.g. 125000.
+        currency:
+          type: string
+          title: Currency
+          description: ISO currency code. Always USD today.
+          default: USD
+      type: object
+      required:
+      - amount
+      - minor_units
+      title: Money
+      description: The single money shape used everywhere a monetary value appears.
     PricingResolved:
       properties:
         type:
@@ -2672,91 +2552,6 @@ components:
       description: 'The resolved payment arrangement on a price. Cash prices omit
 
         network/payer; negotiated prices carry both as reference stubs.'
-    PricingCash:
-      properties:
-        type:
-          type: string
-          const: cash
-          title: Type
-      type: object
-      required:
-      - type
-      title: PricingCash
-    Payer:
-      properties:
-        object:
-          type: string
-          const: payer
-          title: Object
-          default: payer
-        id:
-          type: string
-          title: Id
-          description: Payer identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term.
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-          description: Display name; null when reference data is missing.
-        context:
-          anyOf:
-          - $ref: '#/components/schemas/SearchContext'
-          - type: 'null'
-          description: Query-relative metadata (search only).
-      type: object
-      required:
-      - id
-      title: Payer
-      examples:
-      - id: '76'
-        name: Cigna
-        object: payer
-    NoDataReason:
-      type: string
-      enum:
-      - no_data
-      - permission_denied
-      title: NoDataReason
-    ConsumerSitePersonalizedEstimateErrorResponse:
-      description: Top-level error envelope for v3 personalized estimates.
-      properties:
-        error:
-          $ref: '#/components/schemas/ConsumerSitePersonalizedEstimateErrorPayload'
-      required:
-      - error
-      title: PersonalizedEstimateErrorResponse
-      type: object
-    ListEnvelope_ProviderPackagePrice_:
-      properties:
-        object:
-          type: string
-          const: list
-          title: Object
-          default: list
-        items:
-          items:
-            $ref: '#/components/schemas/ProviderPackagePrice'
-          type: array
-          title: Items
-        page:
-          $ref: '#/components/schemas/PageMeta'
-        no_data_reason:
-          anyOf:
-          - $ref: '#/components/schemas/NoDataReason'
-          - type: 'null'
-          description: Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions.
-        disclosures:
-          items:
-            type: string
-          type: array
-          title: Disclosures
-          description: Human-readable caveats about what this result does and does not imply.
-      type: object
-      required:
-      - items
-      - page
-      title: ListEnvelope[ProviderPackagePrice]
     ConsumerSitePricingNegotiated:
       description: PricingNegotiated
       properties:
@@ -2772,6 +2567,76 @@ components:
       - network_id
       title: PricingNegotiated
       type: object
+    ConsumerSitePriceComparisonInput:
+      description: Inbound payload for the v3 compare endpoint.
+      properties:
+        package_id:
+          minLength: 1
+          title: Package Id
+          type: string
+        provider_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Provider Id
+        pricing:
+          $ref: '#/components/schemas/ConsumerSitePricingNegotiated'
+        member_eligibility:
+          $ref: '#/components/schemas/ConsumerSiteMemberEligibilityInput'
+        location:
+          anyOf:
+          - $ref: '#/components/schemas/ConsumerSiteLocation'
+          - type: 'null'
+          default: null
+      required:
+      - package_id
+      - pricing
+      - member_eligibility
+      title: PriceComparisonInput
+      type: object
+    ConsumerSiteListEnvelopePersonalizedEstimate:
+      description: ListEnvelopePersonalizedEstimate
+      properties:
+        object:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: list
+          title: Object
+        items:
+          items:
+            $ref: '#/components/schemas/ConsumerSiteModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate'
+          title: Items
+          type: array
+        page:
+          $ref: '#/components/schemas/ConsumerSiteModulesConsumerPricingV3DtosCommonPageMeta'
+        no_data_reason:
+          anyOf:
+          - $ref: '#/components/schemas/ConsumerSiteNoDataReason'
+          - type: 'null'
+          default: null
+        disclosures:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          default: null
+          description: Human-readable caveats about what this result does and does not imply.
+          title: Disclosures
+      required:
+      - items
+      - page
+      title: ListEnvelopePersonalizedEstimate
+      type: object
+    ConsumerSitePriceSort:
+      description: Sort options for price listings. `distance` requires a near/zip location.
+      enum:
+      - total
+      - distance
+      title: PriceSort
+      type: string
     ProviderPackagePrice:
       properties:
         object:
@@ -2844,146 +2709,327 @@ components:
           amount: '34705.48'
           currency: USD
           minor_units: 3470548
-    EntityRef:
+    PricesCompareRequest:
       properties:
-        id:
+        package_id:
           type: string
-          title: Id
-          description: Entity identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term.
-        name:
+          minLength: 1
+          title: Package Id
+          examples:
+          - OB002
+        provider_id:
           anyOf:
           - type: string
           - type: 'null'
-          title: Name
-          description: Display name; null when reference data is missing.
+          title: Provider Id
+          examples:
+          - '5756'
+        pricing:
+          oneOf:
+          - $ref: '#/components/schemas/PricingCash'
+          - $ref: '#/components/schemas/PricingNegotiated'
+          title: Pricing
+          discriminator:
+            propertyName: type
+            mapping:
+              cash: '#/components/schemas/PricingCash'
+              negotiated: '#/components/schemas/PricingNegotiated'
+        location:
+          anyOf:
+          - $ref: '#/components/schemas/Location'
+          - type: 'null'
       type: object
       required:
-      - id
-      title: EntityRef
-      description: 'Two-field reference stub. `expand=` swaps it for the full entity.
-
-
-        `name` is nullable by design: 0.8% of priced providers have no reference
-
-        row (measured 07/2026), and the v3 rule is to emit the stub with a null
-
-        name rather than silently dropping the priced row.'
-    LineItem:
+      - package_id
+      - pricing
+      title: PricesCompareRequest
+      description: POST /v3/prices/compare body — the query shape minus sort/expand/pagination.
+    LocationNear:
+      properties:
+        lat:
+          type: number
+          title: Lat
+          description: Latitude of the search anchor.
+          examples:
+          - 39.745961
+        lng:
+          type: number
+          title: Lng
+          description: Longitude of the search anchor.
+          examples:
+          - -104.971559
+        radius_m:
+          type: integer
+          minimum: 1.0
+          title: Radius M
+          description: Search radius in meters.
+          default: 25000
+          examples:
+          - 25000
+      type: object
+      required:
+      - lat
+      - lng
+      title: LocationNear
+    ErrorPayload:
       properties:
         code:
+          $ref: '#/components/schemas/ErrorCode'
+          description: Stable, documented error code.
+        message:
           type: string
-          title: Code
-          description: Billing code.
-        code_type:
-          type: string
-          title: Code Type
-          description: Billing code type.
-        fee_type:
-          type: string
-          title: Fee Type
-          description: 'Fee category: base_code, facility_fee, professional_fee, optional_fee.'
-        description:
-          type: string
-          title: Description
-          description: Human-readable line item description.
-        association_rate:
-          type: number
-          title: Association Rate
-          description: Likelihood this line item is part of the package (0-1).
+          title: Message
+          description: Human-readable error summary.
+        hint:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Hint
+          description: Actionable suggestion for the caller, when applicable.
+        expected:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Expected
+          description: What the API expected.
+        received:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Received
+          description: What the API actually received.
+        field:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Field
+          description: Dot-path of the offending request field.
       type: object
       required:
       - code
-      - code_type
-      - fee_type
-      - description
-      - association_rate
-      title: LineItem
-      description: A component of a package's composition (from `api_ssp_contents`).
-      examples:
-      - association_rate: 0.4491
-        code: '786'
-        code_type: MS-DRG
-        description: CESAREAN SECTION WITHOUT STERILIZATION WITH MCC
-        fee_type: base_code
-    ConsumerSiteListEnvelopePersonalizedEstimate:
-      description: ListEnvelopePersonalizedEstimate
+      - message
+      title: ErrorPayload
+    NoDataReason:
+      type: string
+      enum:
+      - no_data
+      - permission_denied
+      title: NoDataReason
+    ConsumerSiteModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate:
+      description: ModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate
       properties:
         object:
           anyOf:
           - type: string
           - type: 'null'
-          default: list
+          default: personalized_estimate
           title: Object
-        items:
-          items:
-            $ref: '#/components/schemas/ConsumerSiteModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate'
-          title: Items
-          type: array
-        page:
-          $ref: '#/components/schemas/ConsumerSiteModulesConsumerPricingV3DtosCommonPageMeta'
-        no_data_reason:
+        provider:
+          $ref: '#/components/schemas/ConsumerSiteEntityRef'
+        package:
+          $ref: '#/components/schemas/ConsumerSiteEntityRef'
+        pricing:
+          $ref: '#/components/schemas/ConsumerSitePricingResolved'
+        total_allowed_amount:
+          allOf:
+          - $ref: '#/components/schemas/ConsumerSiteMoney'
+          description: Amount that insurance company + patient pay for the service.
+        member_cost_share:
+          $ref: '#/components/schemas/ConsumerSiteMemberCostShare'
+        sub_package_id:
           anyOf:
-          - $ref: '#/components/schemas/ConsumerSiteNoDataReason'
+          - type: string
           - type: 'null'
           default: null
-        disclosures:
+          title: Sub Package Id
+        line_items:
           anyOf:
           - items:
-              type: string
+              $ref: '#/components/schemas/ConsumerSiteLineItem'
             type: array
           - type: 'null'
           default: null
-          description: Human-readable caveats about what this result does and does not imply.
+          title: Line Items
+      required:
+      - provider
+      - package
+      - pricing
+      - total_allowed_amount
+      - member_cost_share
+      title: ModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate
+      type: object
+    ConsumerSiteModulesConsumerPricingV3DtosCommonPageMeta:
+      description: ModulesConsumerPricingV3DtosCommonPageMeta
+      properties:
+        size:
+          description: Number of items in this page.
+          title: Size
+          type: integer
+        total:
+          description: Count of the full filtered set, not just this page.
+          title: Total
+          type: integer
+        next_cursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Next Cursor
+      required:
+      - size
+      - total
+      title: ModulesConsumerPricingV3DtosCommonPageMeta
+      type: object
+    ConsumerSiteBenefitCategory:
+      properties:
+        category:
+          title: Category
+          type: string
+        coinsurance:
+          title: Coinsurance
+          type: number
+        copayment:
+          title: Copayment
+          type: number
+        deductible:
+          anyOf:
+          - type: number
+          - type: 'null'
+          description: '`0` means deductible does not apply. `null` means plan deductible applies'
+          title: Deductible
+      required:
+      - category
+      - coinsurance
+      - copayment
+      - deductible
+      title: BenefitCategory
+      type: object
+    ListEnvelope_Provider_:
+      properties:
+        object:
+          type: string
+          const: list
+          title: Object
+          default: list
+        items:
+          items:
+            $ref: '#/components/schemas/Provider'
+          type: array
+          title: Items
+        page:
+          $ref: '#/components/schemas/PageMeta'
+        no_data_reason:
+          anyOf:
+          - $ref: '#/components/schemas/NoDataReason'
+          - type: 'null'
+          description: Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions.
+        disclosures:
+          items:
+            type: string
+          type: array
           title: Disclosures
+          description: Human-readable caveats about what this result does and does not imply.
+      type: object
       required:
       - items
       - page
-      title: ListEnvelopePersonalizedEstimate
-      type: object
-    ConsumerSitePersonalizedEstimateErrorPayload:
-      description: Details about an error returned by a v3 personalized-estimate endpoint.
+      title: ListEnvelope[Provider]
+    ListEnvelope_Network_:
       properties:
-        code:
-          allOf:
-          - $ref: '#/components/schemas/ConsumerSitePersonalizedEstimateErrorCode'
-          description: Stable, documented error code. Switch on this in code.
-        message:
-          description: Human-readable error summary, suitable for narration to an end user.
-          title: Message
+        object:
           type: string
-        hint:
+          const: list
+          title: Object
+          default: list
+        items:
+          items:
+            $ref: '#/components/schemas/Network'
+          type: array
+          title: Items
+        page:
+          $ref: '#/components/schemas/PageMeta'
+        no_data_reason:
           anyOf:
-          - type: string
+          - $ref: '#/components/schemas/NoDataReason'
           - type: 'null'
-          default: null
-          description: Actionable suggestion for the caller, when applicable.
-          title: Hint
-        expected:
-          anyOf:
-          - type: string
-          - type: 'null'
-          default: null
-          description: What the API expected (format, value range, etc).
-          title: Expected
-        received:
-          anyOf:
-          - type: string
-          - type: 'null'
-          default: null
-          description: What the API actually received.
-          title: Received
-        field:
-          anyOf:
-          - type: string
-          - type: 'null'
-          default: null
-          description: Dot-path of the offending request field, when applicable.
-          title: Field
-      required:
-      - code
-      - message
-      title: PersonalizedEstimateErrorPayload
+          description: Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions.
+        disclosures:
+          items:
+            type: string
+          type: array
+          title: Disclosures
+          description: Human-readable caveats about what this result does and does not imply.
       type: object
+      required:
+      - items
+      - page
+      title: ListEnvelope[Network]
+    ListEnvelope_Package_:
+      properties:
+        object:
+          type: string
+          const: list
+          title: Object
+          default: list
+        items:
+          items:
+            $ref: '#/components/schemas/Package'
+          type: array
+          title: Items
+        page:
+          $ref: '#/components/schemas/PageMeta'
+        no_data_reason:
+          anyOf:
+          - $ref: '#/components/schemas/NoDataReason'
+          - type: 'null'
+          description: Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions.
+        disclosures:
+          items:
+            type: string
+          type: array
+          title: Disclosures
+          description: Human-readable caveats about what this result does and does not imply.
+      type: object
+      required:
+      - items
+      - page
+      title: ListEnvelope[Package]
+    ConsumerSitePersonalizedEstimateErrorCode:
+      description: 'Stable error codes returned by the v3 personalized-estimate endpoints.
+
+
+        Uppercase codes come from Consumer Pricing v3. Lowercase codes are specific to
+
+        personalized-estimate eligibility and authorization.'
+      enum:
+      - internal_server_error
+      - eligibility_service_error
+      - unsupported_tpa
+      - unavailable_payer
+      - invalid_dob
+      - invalid_member_id
+      - invalid_member_name
+      - member_not_found
+      - no_active_coverage
+      - plan_not_found
+      - pricing_unavailable
+      - invalid_json
+      - unauthorized
+      - forbidden
+      - authorization_unavailable
+      - invalid_request
+      - invalid_id_format
+      - insufficient_scope
+      - location_ambiguous
+      - unresolvable_location
+      - not_found
+      - invalid_expand
+      - permission_denied
+      - rate_limited
+      - search_unavailable
+      - conflicting_parameters
+      title: PersonalizedEstimateErrorCode
+      type: string
     ConsumerSiteBenefitsSummary:
       properties:
         remaining_deductible:
@@ -3083,34 +3129,72 @@ components:
       - out_of_pocket_accumulator_type
       title: BenefitsSummary
       type: object
-    PriceSort:
+    ConsumerSitePersonalizedEstimateErrorResponse:
+      description: Top-level error envelope for v3 personalized estimates.
+      properties:
+        error:
+          $ref: '#/components/schemas/ConsumerSitePersonalizedEstimateErrorPayload'
+      required:
+      - error
+      title: PersonalizedEstimateErrorResponse
+      type: object
+    BillingCode:
+      properties:
+        code:
+          type: string
+          title: Code
+          description: Billing code.
+          examples:
+          - '59510'
+        code_type:
+          type: string
+          title: Code Type
+          description: Billing code type.
+          examples:
+          - HCPCS
+      type: object
+      required:
+      - code
+      - code_type
+      title: BillingCode
+      description: 'A billing code and its coding system. Shared vocabulary primitive —
+
+        used wherever a resource surfaces a structured code (e.g.
+
+        Package.anchor_codes); semantics belong to the field that carries it.'
+    PriceExpand:
       type: string
       enum:
-      - total
-      - distance
-      title: PriceSort
-      description: Sort options for price listings. `distance` requires a near/zip location.
-    ConsumerSiteLocation:
-      description: 'Structured location intent: exactly one of the three modes.'
+      - line_items
+      title: PriceExpand
+      description: Optional relations the price detail endpoint can inline via `expand`.
+    PriceComparison:
       properties:
-        near:
+        object:
+          type: string
+          const: price_comparison
+          title: Object
+          default: price_comparison
+        count:
+          type: integer
+          title: Count
+          description: Number of prices the statistics were computed over.
+        stats:
           anyOf:
-          - $ref: '#/components/schemas/ConsumerSiteLocationNear'
+          - $ref: '#/components/schemas/ComparisonStats'
           - type: 'null'
-          default: null
-        within:
-          anyOf:
-          - $ref: '#/components/schemas/ConsumerSiteLocationWithin'
-          - type: 'null'
-          default: null
-        zip:
-          anyOf:
-          - type: string
-          - type: 'null'
-          default: null
-          title: Zip
-      title: Location
+          description: Null when count is 0.
+        disclosures:
+          items:
+            type: string
+          type: array
+          title: Disclosures
+        meta:
+          $ref: '#/components/schemas/ResponseMeta'
       type: object
+      required:
+      - count
+      title: PriceComparison
     PricesQueryRequest:
       properties:
         package_id:
@@ -3168,298 +3252,54 @@ components:
       - package_id
       - pricing
       title: PricesQueryRequest
-    ErrorPayload:
+    ProviderAddress:
       properties:
-        code:
-          $ref: '#/components/schemas/ErrorCode'
-          description: Stable, documented error code.
-        message:
+        city:
           type: string
-          title: Message
-          description: Human-readable error summary.
-        hint:
+          title: City
+          description: City the provider is located in.
+        state:
+          type: string
+          title: State
+          description: Two-letter USPS state code.
+        zip_code:
+          type: string
+          title: Zip Code
+          description: Provider ZIP code.
+        latitude:
           anyOf:
-          - type: string
+          - type: number
           - type: 'null'
-          title: Hint
-          description: Actionable suggestion for the caller, when applicable.
-        expected:
+          title: Latitude
+          description: Provider HQ latitude; null for ~6% of providers.
+        longitude:
           anyOf:
-          - type: string
+          - type: number
           - type: 'null'
-          title: Expected
-          description: What the API expected.
-        received:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Received
-          description: What the API actually received.
-        field:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Field
-          description: Dot-path of the offending request field.
+          title: Longitude
+          description: Provider HQ longitude; null for ~6% of providers.
       type: object
       required:
-      - code
-      - message
-      title: ErrorPayload
-    ConsumerSitePriceComparisonInput:
-      description: Inbound payload for the v3 compare endpoint.
+      - city
+      - state
+      - zip_code
+      title: ProviderAddress
+    ConsumerSiteEntityRef:
+      description: 'Two-field reference stub. `expand=` swaps it for the full entity.  `name` is nullable by design: 0.8% of priced providers have no reference row (measured 07/2026), and the v3 rule is to emit the stub with a null name rather than silently dropping the priced row.'
       properties:
-        package_id:
-          minLength: 1
-          title: Package Id
+        id:
+          description: Entity identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term.
+          title: Id
           type: string
-        provider_id:
+        name:
           anyOf:
           - type: string
           - type: 'null'
           default: null
-          title: Provider Id
-        pricing:
-          $ref: '#/components/schemas/ConsumerSitePricingNegotiated'
-        member_eligibility:
-          $ref: '#/components/schemas/ConsumerSiteMemberEligibilityInput'
-        location:
-          anyOf:
-          - $ref: '#/components/schemas/ConsumerSiteLocation'
-          - type: 'null'
-          default: null
+          title: Name
       required:
-      - package_id
-      - pricing
-      - member_eligibility
-      title: PriceComparisonInput
-      type: object
-    PricesCompareRequest:
-      properties:
-        package_id:
-          type: string
-          minLength: 1
-          title: Package Id
-          examples:
-          - OB002
-        provider_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Provider Id
-          examples:
-          - '5756'
-        pricing:
-          oneOf:
-          - $ref: '#/components/schemas/PricingCash'
-          - $ref: '#/components/schemas/PricingNegotiated'
-          title: Pricing
-          discriminator:
-            propertyName: type
-            mapping:
-              cash: '#/components/schemas/PricingCash'
-              negotiated: '#/components/schemas/PricingNegotiated'
-        location:
-          anyOf:
-          - $ref: '#/components/schemas/Location'
-          - type: 'null'
-      type: object
-      required:
-      - package_id
-      - pricing
-      title: PricesCompareRequest
-      description: POST /v3/prices/compare body — the query shape minus sort/expand/pagination.
-    PricingNegotiated:
-      properties:
-        type:
-          type: string
-          const: negotiated
-          title: Type
-        network_id:
-          type: string
-          title: Network Id
-          description: Network identifier (string-wrapped 64-bit integer).
-          examples:
-          - '-3776001016975145508'
-      type: object
-      required:
-      - type
-      - network_id
-      title: PricingNegotiated
-    ConsumerSiteResponseMeta:
-      description: ResponseMeta
-      properties:
-        dataset_version:
-          anyOf:
-          - type: string
-          - type: 'null'
-          default: null
-          title: Dataset Version
-      title: ResponseMeta
-      type: object
-    ComparisonStats:
-      properties:
-        min:
-          $ref: '#/components/schemas/Money'
-        max:
-          $ref: '#/components/schemas/Money'
-        avg:
-          $ref: '#/components/schemas/Money'
-        median:
-          $ref: '#/components/schemas/Money'
-        q1:
-          $ref: '#/components/schemas/Money'
-        q3:
-          $ref: '#/components/schemas/Money'
-      type: object
-      required:
-      - min
-      - max
-      - avg
-      - median
-      - q1
-      - q3
-      title: ComparisonStats
-    ConsumerSiteComparisonStats:
-      description: ComparisonStats
-      properties:
-        min:
-          $ref: '#/components/schemas/ConsumerSiteMoney'
-        max:
-          $ref: '#/components/schemas/ConsumerSiteMoney'
-        avg:
-          $ref: '#/components/schemas/ConsumerSiteMoney'
-        median:
-          $ref: '#/components/schemas/ConsumerSiteMoney'
-        q1:
-          $ref: '#/components/schemas/ConsumerSiteMoney'
-        q3:
-          $ref: '#/components/schemas/ConsumerSiteMoney'
-      required:
-      - min
-      - max
-      - avg
-      - median
-      - q1
-      - q3
-      title: ComparisonStats
-      type: object
-    PriceComparison:
-      properties:
-        object:
-          type: string
-          const: price_comparison
-          title: Object
-          default: price_comparison
-        count:
-          type: integer
-          title: Count
-          description: Number of prices the statistics were computed over.
-        stats:
-          anyOf:
-          - $ref: '#/components/schemas/ComparisonStats'
-          - type: 'null'
-          description: Null when count is 0.
-        disclosures:
-          items:
-            type: string
-          type: array
-          title: Disclosures
-        meta:
-          $ref: '#/components/schemas/ResponseMeta'
-      type: object
-      required:
-      - count
-      title: PriceComparison
-    ErrorResponse:
-      properties:
-        error:
-          $ref: '#/components/schemas/ErrorPayload'
-      type: object
-      required:
-      - error
-      title: ErrorResponse
-    ConsumerSiteNoDataReason:
-      description: NoDataReason
-      enum:
-      - no_data
-      - permission_denied
-      title: NoDataReason
-      type: string
-    ConsumerSiteMoney:
-      description: The single money shape used everywhere a monetary value appears.
-      properties:
-        amount:
-          description: String-decimal value, e.g. "1250.00".
-          title: Amount
-          type: string
-        minor_units:
-          description: Integer minor units, e.g. 125000.
-          title: Minor Units
-          type: integer
-        currency:
-          anyOf:
-          - type: string
-          - type: 'null'
-          default: USD
-          description: ISO currency code. Always USD today.
-          title: Currency
-      required:
-      - amount
-      - minor_units
-      title: Money
-      type: object
-    ConsumerSitePersonalizedEstimatesQueryRequest:
-      description: Inbound payload for the v3 list-prices endpoint.
-      properties:
-        package_id:
-          minLength: 1
-          title: Package Id
-          type: string
-        provider_id:
-          anyOf:
-          - type: string
-          - type: 'null'
-          default: null
-          title: Provider Id
-        pricing:
-          $ref: '#/components/schemas/ConsumerSitePricingNegotiated'
-        member_eligibility:
-          $ref: '#/components/schemas/ConsumerSiteMemberEligibilityInput'
-        location:
-          anyOf:
-          - $ref: '#/components/schemas/ConsumerSiteLocation'
-          - type: 'null'
-          default: null
-        sort:
-          anyOf:
-          - $ref: '#/components/schemas/ConsumerSitePriceSort'
-          - type: 'null'
-          default: null
-        sort_direction:
-          default: asc
-          enum:
-          - asc
-          - desc
-          title: Sort Direction
-          type: string
-        page_size:
-          default: 25
-          maximum: 250
-          minimum: 1
-          title: Page Size
-          type: integer
-        cursor:
-          anyOf:
-          - type: string
-          - type: 'null'
-          default: null
-          title: Cursor
-      required:
-      - package_id
-      - pricing
-      - member_eligibility
-      title: PersonalizedEstimatesQueryRequest
+      - id
+      title: EntityRef
       type: object
     Location:
       properties:
@@ -3536,39 +3376,6 @@ components:
         npi: '1417946021'
         object: provider
         type: Short Term Acute Care Hospital
-    ConsumerSiteLineItem:
-      description: A component of a package's composition (from `api_ssp_contents`).
-      properties:
-        code:
-          description: Billing code.
-          title: Code
-          type: string
-        code_type:
-          description: Billing code type.
-          title: Code Type
-          type: string
-        fee_type:
-          description: 'Fee category: base_code, facility_fee, professional_fee, optional_fee.'
-          title: Fee Type
-          type: string
-        description:
-          description: Human-readable line item description.
-          title: Description
-          type: string
-        association_rate:
-          anyOf:
-          - type: number
-          - type: integer
-          description: Likelihood this line item is part of the package (0-1).
-          title: Association Rate
-      required:
-      - code
-      - code_type
-      - fee_type
-      - description
-      - association_rate
-      title: LineItem
-      type: object
     ConsumerSiteLocationWithin:
       description: Region filter. Exactly one of state / cbsa / zip_codes.
       properties:
@@ -3596,6 +3403,199 @@ components:
           title: Zip Codes
       title: LocationWithin
       type: object
+    ConsumerSiteResponseMeta:
+      description: ResponseMeta
+      properties:
+        dataset_version:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Dataset Version
+      title: ResponseMeta
+      type: object
+    ListEnvelope_Payer_:
+      properties:
+        object:
+          type: string
+          const: list
+          title: Object
+          default: list
+        items:
+          items:
+            $ref: '#/components/schemas/Payer'
+          type: array
+          title: Items
+        page:
+          $ref: '#/components/schemas/PageMeta'
+        no_data_reason:
+          anyOf:
+          - $ref: '#/components/schemas/NoDataReason'
+          - type: 'null'
+          description: Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions.
+        disclosures:
+          items:
+            type: string
+          type: array
+          title: Disclosures
+          description: Human-readable caveats about what this result does and does not imply.
+      type: object
+      required:
+      - items
+      - page
+      title: ListEnvelope[Payer]
+    ConsumerSiteLocation:
+      description: 'Structured location intent: exactly one of the three modes.'
+      properties:
+        near:
+          anyOf:
+          - $ref: '#/components/schemas/ConsumerSiteLocationNear'
+          - type: 'null'
+          default: null
+        within:
+          anyOf:
+          - $ref: '#/components/schemas/ConsumerSiteLocationWithin'
+          - type: 'null'
+          default: null
+        zip:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          title: Zip
+      title: Location
+      type: object
+    ListEnvelope_ProviderPackagePrice_:
+      properties:
+        object:
+          type: string
+          const: list
+          title: Object
+          default: list
+        items:
+          items:
+            $ref: '#/components/schemas/ProviderPackagePrice'
+          type: array
+          title: Items
+        page:
+          $ref: '#/components/schemas/PageMeta'
+        no_data_reason:
+          anyOf:
+          - $ref: '#/components/schemas/NoDataReason'
+          - type: 'null'
+          description: Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions.
+        disclosures:
+          items:
+            type: string
+          type: array
+          title: Disclosures
+          description: Human-readable caveats about what this result does and does not imply.
+      type: object
+      required:
+      - items
+      - page
+      title: ListEnvelope[ProviderPackagePrice]
+    Network:
+      properties:
+        object:
+          type: string
+          const: network
+          title: Object
+          default: network
+        id:
+          type: string
+          title: Id
+          description: Network identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term.
+        name:
+          type: string
+          title: Name
+          description: Display name of the network.
+        payer:
+          $ref: '#/components/schemas/EntityRef'
+          description: The network's payer as an {id, name} stub; the full entity lives at /v3/payers/{id}.
+        context:
+          anyOf:
+          - $ref: '#/components/schemas/SearchContext'
+          - type: 'null'
+          description: Query-relative metadata (search only).
+      type: object
+      required:
+      - id
+      - name
+      - payer
+      title: Network
+      examples:
+      - id: '-3776001016975145508'
+        name: National OAP
+        object: network
+        payer:
+          id: '76'
+          name: Cigna
+    ConsumerSiteMemberEligibilityInput:
+      description: 'Shared eligibility fields carried by all cost-share input payloads.
+
+
+        Contains PHI (name/DOB/member id) — handle per HIPAA controls.'
+      properties:
+        first_name:
+          maxLength: 255
+          minLength: 1
+          title: First Name
+          type: string
+        last_name:
+          maxLength: 255
+          minLength: 1
+          title: Last Name
+          type: string
+        date_of_birth:
+          format: date
+          title: Date Of Birth
+          type: string
+        member_id:
+          maxLength: 255
+          minLength: 1
+          title: Member Id
+          type: string
+        consent_attested:
+          const: true
+          title: Consent Attested
+      required:
+      - first_name
+      - last_name
+      - date_of_birth
+      - member_id
+      - consent_attested
+      title: MemberEligibilityInput
+      type: object
+    ErrorResponse:
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorPayload'
+      type: object
+      required:
+      - error
+      title: ErrorResponse
+    PageMeta:
+      properties:
+        size:
+          type: integer
+          title: Size
+          description: Number of items in this page.
+        total:
+          type: integer
+          title: Total
+          description: Count of the full filtered set, not just this page.
+        next_cursor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Cursor
+          description: Opaque cursor for the next page; null when exhausted.
+      type: object
+      required:
+      - size
+      - total
+      title: PageMeta
   securitySchemes:
     BearerAuth:
       type: http

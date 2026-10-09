@@ -101,3 +101,17 @@ x-evidence:
 - fetched: '2026-08-14'
   url: https://turquoise.health/api/docs/llms.txt
   http_status: 200
+rfc9728:
+  endpoint: https://consumer-mcp.turquoise.health/mcp
+  metadata_url: https://consumer-mcp.turquoise.health/.well-known/oauth-protected-resource/mcp
+  discovered_via: WWW-Authenticate resource_metadata on an anonymous POST initialize
+  fetched: '2026-09-25'
+  http_status: 200
+  content_type: application/json
+  document:
+    resource: https://consumer-mcp.turquoise.health/mcp
+    authorization_servers:
+    - https://consumer-mcp.turquoise.health/
+    scopes_supported: []
+    bearer_methods_supported:
+    - header

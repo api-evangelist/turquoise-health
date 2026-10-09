@@ -149,3 +149,28 @@ freeTools:
       Free public tool tracking hospital compliance with CMS price transparency
       requirements.
     url: https://turquoise.health/
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - negotiated
+  units: []
+  plans:
+  - name: Market Intelligence
+    access: other
+    model: negotiated
+    model_how: derived
+    units: []
+    periods: []
+  - name: Contract Intelligence
+    access: other
+    model: negotiated
+    model_how: derived
+    units: []
+    periods: []
+  - name: Precision Contracting
+    access: other
+    model: negotiated
+    model_how: derived
+    units: []
+    periods: []

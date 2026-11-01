@@ -64,55 +64,147 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Healthcare price transparency platform with a public Consumer Pricing API for
-cash and insurer-negotiated rates on shoppable services, personalized member
-out-of-pocket estimates, and a hosted MCP server for AI agents.
+Turquoise Health is a healthcare price transparency platform. Its public developer surface is the Consumer Pricing API — a documented OpenAPI 3.1.0 REST API at api.turquoise.health covering providers, payers, networks, Standard Service Packages, and cash and insurer-negotiated rates for shoppable services, plus personalized out-of-pocket estimates computed by layering a member's live X12 270/271 eligibility and accumulators onto a negotiated rate. The same OAuth 2.0 client-credentials token also authenticates a hosted Model Context Protocol server at consumer-mcp.turquoise.health, which exposes five workflow-shaped pricing tools to AI agents. Turquoise also sells platform tiers for market intelligence, contract intelligence and precision contracting to providers, payers and life sciences organizations, generates CMS-compliant machine-readable files, and publishes free public tools including the Medicare Pricer, payer transparency scores and a hospital transparency tracker.
 
-**Website:** https://turquoise.health/  
-**Developer docs:** https://turquoise.health/api/docs/  
-**OpenAPI:** https://turquoise.health/api/docs/openapi.json  
-**llms.txt:** https://turquoise.health/api/docs/llms.txt  
-**GitHub:** https://github.com/turquoisehealth  
-**Blog:** https://turquoise.health/resources/blog/  
-**LinkedIn:** https://www.linkedin.com/company/turquoise-health/  
-**X / Twitter:** https://twitter.com/TurquoiseHC  
+**Areas:** Healthcare · Price Transparency · Hospital Rates · Payer Rates · Machine-Readable Files · FHIR · Health Insurance · Negotiated Rates · Out-of-Pocket Costs · MRF · Consumer Pricing · MCP
 
-## APIs
+## Turquoise Health on APIs.io
 
-- **Turquoise Consumer Pricing API** — `https://api.turquoise.health`. OpenAPI 3.1.0,
-  15 operations across providers, payers, networks, Standard Service Packages, prices and
-  personalized estimates. See [openapi/](openapi/).
-- **Turquoise Connector (MCP)** — `https://consumer-mcp.turquoise.health/mcp`. Hosted,
-  remote, streamable HTTP, Public Preview. Five workflow-shaped tools. See [mcp/](mcp/).
-- **Standard Service Packages (SSP)** — the addressing scheme for the whole API, served
-  through its `/v3/packages` operations. No separate host.
+Everything profiled for Turquoise Health is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/turquoise-health/](https://apis.io/providers/turquoise-health/)** — or go straight to one of the APIs or properties below.
 
-## Authentication
+### APIs (3)
 
-One OAuth 2.0 client-credentials token authenticates **both** the REST API and the MCP
-server. Token endpoint `https://api.turquoise.health/oauth/token`; the request body is
-JSON and requires `organization_id` alongside `client_id`/`client_secret`. MCP calls need
-the `read:mcp` scope; personalized estimates need `read:eligibility` plus a signed BAA.
-See [authentication/](authentication/) and [scopes/](scopes/).
+- [Turquoise Connector (MCP)](https://apis.io/apis/turquoise-health/turquoise-connector-mcp/) — Hosted Model Context Protocol server exposing Turquoise's consumer pricing to AI agents over streamable HTTP. Five workflow-shaped tools — find_entity,…
+- [Standard Service Packages (SSP)](https://apis.io/apis/turquoise-health/standard-service-packages-ssp/) — Turquoise's open library of Standard Service Packages, which gather all medical services, materials and fees associated with a healthcare procedure and…
+- [Turquoise Health Consumer Pricing API](https://apis.io/apis/turquoise-health/turquoise-health-consumer-pricing-api/) — The Consumer Pricing API from Turquoise Health — 15 operation(s) for consumer pricing.
 
-## Notable
+### Published properties
 
-- **PHI-bearing surface.** `POST /v3/personalized-estimates` runs a consented X12 270/271
-  eligibility check. Demo accounts may not send live patient data. See
-  [sandbox/](sandbox/) and [conventions/](conventions/).
-- **Real discovery documents.** RFC 8414 and RFC 9728 OAuth metadata are served
-  anonymously on the MCP host — see [well-known/](well-known/).
-- **Measured absences.** No status page, no changelog, no deprecation policy, no
-  `security.txt`, no agent card, no event/webhook surface, no idempotency contract, and
-  no client SDK in any language. Each is recorded where it belongs rather than omitted.
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-## Artifacts
+#### MCP servers (1)
 
-| Area | File |
+Model Context Protocol servers that expose the API to agents.
+
+- [Turquoise Consumer Pricing MCP](https://apis.io/servers/turquoise-health/turquoise-consumer-pricing-mcp/)
+
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Turquoise Health Agentic Access](https://apis.io/agentic-access/turquoise-health/turquoise-health-agentic-access/)
+
+#### JSON-LD (1)
+
+Linked-data contexts for the provider's vocabulary.
+
+- [Turquoise Health Context](https://apis.io/jsonld/turquoise-health/turquoise-health-context/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Turquoise Health Consumer Pricing Overlay](https://apis.io/overlays/turquoise-health/turquoise-health-consumer-pricing-overlay/)
+
+#### Security (3)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Turquoise Health Authentication](https://apis.io/security/turquoise-health/turquoise-health-authentication/)
+- [Turquoise Health Domain Security](https://apis.io/security/turquoise-health/turquoise-health-domain-security/)
+- [Turquoise Health Trust Center](https://apis.io/security/turquoise-health/turquoise-health-trust-center/)
+
+#### OAuth scopes (1)
+
+The permissions the API asks for.
+
+- [Turquoise Health Scopes](https://apis.io/scopes/turquoise-health/turquoise-health-scopes/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Turquoise Health Plans Pricing](https://apis.io/plans/turquoise-health/turquoise-health-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Turquoise Health Rate Limits](https://apis.io/rate-limits/turquoise-health/turquoise-health-rate-limits/)
+
+#### FinOps (1)
+
+What the API costs to run, by operation.
+
+- [Turquoise Health Finops](https://apis.io/finops/turquoise-health/turquoise-health-finops/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://turquoise.health/)
+- [Documentation](https://turquoise.health/api/docs/)
+- [Getting started](https://turquoise.health/api/docs/start-building/)
+- [API reference](https://turquoise.health/api/docs/api-reference/)
+- [Pricing](https://turquoise.health/plans/providers)
+- [Sign up](https://turquoise.health/signup/?signupContext=api)
+- [Blog](https://turquoise.health/resources/blog/)
+- [Compliance](https://app.vanta.com/turquoise.health/trust/4eadhio8ef1h3zwumb77kp)
+- [Terms of service](https://turquoise.health/legal/terms-of-service)
+- [Privacy policy](https://turquoise.health/legal/privacy-policy)
+- [GitHub](https://github.com/turquoisehealth)
+
+## API Evangelist rating
+
+**Kin Score 55.0** — strong · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
 |---|---|
-| Contract | [openapi/](openapi/), [overlays/](overlays/) |
-| Agents | [mcp/](mcp/), [skills/](skills/), [llms/](llms/), [agentic-access/](agentic-access/) |
-| Runtime semantics | [conventions/](conventions/), [errors/](errors/), [data-model/](data-model/), [rate-limits/](rate-limits/) |
-| Access | [authentication/](authentication/), [scopes/](scopes/), [sandbox/](sandbox/), [plans/](plans/) |
-| Trust | [security/](security/), [conformance/](conformance/), [well-known/](well-known/) |
-| Operations | [lifecycle/](lifecycle/), [packages/](packages/), [finops/](finops/) |
+| Discoverability | 75.0 |
+| Contract quality | 59.0 |
+| Contract governance | 18.2 |
+| Operational transparency | 2.6 |
+| Developer ergonomics | 61.3 |
+| Access clarity | 77.6 |
+
+**Agent readiness 54.6** — agent-ready (gated down from agent-native)
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | verified |
+| Auth Clarity | served (partial credit) |
+| Idempotency | — |
+| Error Semantics | verified |
+| OpenAPI Examples | partial |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | served (partial credit) |
+| Protected Resource Metadata | verified |
+| Dynamic Client Registration | yes |
+| Agentic Commerce | — |
+| Pagination Ratio | partial |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 32.8** — Health
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/turquoise-health/](https://apis.io/providers/turquoise-health/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Turquoise Health: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/turquoise-health/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
